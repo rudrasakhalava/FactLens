@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # FactLens: Advanced Video Text & Speech Metadata Extractor
 
 FactLens is a modular, scalable, production-grade video metadata, speech-to-text, and visual text (OCR) extraction pipeline built in Python 3.12. It merges spoken words from audio with texts appearing on screen chronologically and stores the consolidated transcripts into MongoDB.
@@ -194,3 +195,7 @@ When processing completes, a document is stored in MongoDB inside the `RealityCh
 ## Log Output
 
 Logs are outputted to the console and stored under the file **`factlens_processing.log`** in the project directory for tracking.
+=======
+# FactLens
+FactLens is a GenAI browser extension that transcribes video speech, extracts factual claims, verifies them using RAG and trusted web sources, and returns evidence-based verdicts with voice explanations.
+>>>>>>> 1aede72c499dd5d91b6f0989d4f1440d14fe0b6a

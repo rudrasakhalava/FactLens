@@ -44,3 +44,35 @@
 2026-06-26 15:54:58,204 [INFO] database.mongo_client: MongoDB connected and indexes created successfully.
 2026-06-26 15:54:58,206 [INFO] database.mongo_client: Successfully inserted video transcript. ObjectId: 6a3e537a9bba089afcdb2e93
 2026-06-26 15:54:58,208 [INFO] database.mongo_client: MongoDB client connection closed.
+2026-06-26 16:30:11,461 [INFO] FactLensOrchestrator: ============================================================
+2026-06-26 16:30:11,462 [INFO] FactLensOrchestrator: Starting FactLens pipeline for: video2.mp4
+2026-06-26 16:30:11,463 [INFO] FactLensOrchestrator: ============================================================
+2026-06-26 16:30:11,574 [INFO] utils.video: Successfully extracted video metadata: video2.mp4 (720x1280, 10.65s)
+2026-06-26 16:30:11,591 [INFO] pipeline.audio_extractor: Extracting audio using command: ffmpeg -i C:\Users\rudra\.gemini\antigravity\scratch\factlens\video2.mp4 -vn -acodec pcm_s16le -ar 16000 -ac 1 C:\Users\rudra\.gemini\antigravity\scratch\factlens\temp\audio.wav -y
+2026-06-26 16:30:11,751 [INFO] pipeline.audio_extractor: Audio extracted successfully: temp/audio.wav
+2026-06-26 16:30:11,752 [INFO] pipeline.transcriber: Loading Whisper model 'base' on device 'cpu'...
+2026-06-26 16:30:13,136 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base/revision/main "HTTP/1.1 200 OK"
+2026-06-26 16:30:16,486 [INFO] pipeline.transcriber: Whisper model loaded successfully.
+2026-06-26 16:30:16,488 [INFO] pipeline.transcriber: Starting audio transcription for audio.wav
+2026-06-26 16:30:16,915 [INFO] faster_whisper: Processing audio with duration 00:10.635
+2026-06-26 16:30:19,477 [INFO] faster_whisper: Detected language 'en' with probability 1.00
+2026-06-26 16:30:19,488 [INFO] pipeline.transcriber: Detected language: 'en' with probability 1.00
+2026-06-26 16:30:23,095 [INFO] pipeline.transcriber: Transcription completed. Extracted 2 segments.
+2026-06-26 16:30:23,273 [INFO] pipeline.frame_extractor: Extracting frames from video: video2.mp4 (FPS: 60.00, Duration: 10.65s)
+2026-06-26 16:30:23,274 [INFO] pipeline.frame_extractor: Target interval: 1.0s
+2026-06-26 16:30:24,582 [INFO] pipeline.frame_extractor: Frame extraction completed. Extracted 11 frames.
+2026-06-26 16:30:24,588 [INFO] pipeline.ocr_engine: Initializing EasyOCR reader for languages: ['en', 'hi', 'gu']
+2026-06-26 16:30:24,591 [WARNING] easyocr.easyocr: Neither CUDA nor MPS are available - defaulting to CPU. Note: This module is much faster with a GPU.
+2026-06-26 16:30:24,867 [ERROR] pipeline.ocr_engine: Failed to initialize EasyOCR: ({'gu'}, 'is not supported')
+2026-06-26 16:30:24,867 [INFO] pipeline.ocr_engine: Retrying EasyOCR initialization with CPU-only fallback...
+2026-06-26 16:30:24,868 [WARNING] easyocr.easyocr: Using CPU. Note: This module is much faster with a GPU.
+2026-06-26 16:30:25,120 [ERROR] pipeline.ocr_engine: Failed CPU-only initialization of EasyOCR: ({'gu'}, 'is not supported')
+2026-06-26 16:30:25,121 [ERROR] FactLensOrchestrator: OCR step failed: Could not load EasyOCR models: ({'gu'}, 'is not supported')
+2026-06-26 16:30:25,126 [INFO] pipeline.frame_extractor: Temporary frames directory cleaned up successfully.
+2026-06-26 16:30:25,128 [INFO] FactLensOrchestrator: Temporary audio WAV file deleted.
+2026-06-26 16:30:25,129 [INFO] pipeline.merger: Merging speech transcription and OCR visual text...
+2026-06-26 16:30:25,130 [INFO] pipeline.merger: Merging complete. Generated 2 chronological timeline entries.
+2026-06-26 16:30:25,131 [INFO] database.mongo_client: Connecting to MongoDB at mongodb://localhost:27017/
+2026-06-26 16:30:25,175 [INFO] database.mongo_client: MongoDB connected and indexes created successfully.
+2026-06-26 16:30:25,183 [INFO] database.mongo_client: Successfully inserted video transcript. ObjectId: 6a3e5bc9d1904c0cca3488f4
+2026-06-26 16:30:25,185 [INFO] database.mongo_client: MongoDB client connection closed.
