@@ -1,0 +1,46 @@
+2026-06-26 15:52:57,657 [INFO] FactLensOrchestrator: ============================================================
+2026-06-26 15:52:57,658 [INFO] FactLensOrchestrator: Starting FactLens pipeline for: video.mp4
+2026-06-26 15:52:57,659 [INFO] FactLensOrchestrator: ============================================================
+2026-06-26 15:52:57,883 [INFO] utils.video: Successfully extracted video metadata: video.mp4 (720x1280, 17.52s)
+2026-06-26 15:52:57,894 [INFO] pipeline.audio_extractor: Extracting audio using command: ffmpeg -i C:\Users\rudra\.gemini\antigravity\scratch\factlens\video.mp4 -vn -acodec pcm_s16le -ar 16000 -ac 1 C:\Users\rudra\.gemini\antigravity\scratch\factlens\temp\audio.wav -y
+2026-06-26 15:52:58,416 [INFO] pipeline.audio_extractor: Audio extracted successfully: temp/audio.wav
+2026-06-26 15:52:58,417 [INFO] pipeline.transcriber: Loading Whisper model 'base' on device 'cpu'...
+2026-06-26 15:53:05,194 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/agent-harnesses "HTTP/1.1 200 OK"
+2026-06-26 15:53:05,434 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base/revision/main "HTTP/1.1 200 OK"
+2026-06-26 15:53:05,701 [INFO] httpx: HTTP Request: HEAD https://huggingface.co/Systran/faster-whisper-base/resolve/ebe41f70d5b6dfa9166e2c581c45c9c0cfc57b66/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-26 15:53:05,734 [INFO] httpx: HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Systran/faster-whisper-base/ebe41f70d5b6dfa9166e2c581c45c9c0cfc57b66/config.json "HTTP/1.1 200 OK"
+2026-06-26 15:53:05,751 [INFO] httpx: HTTP Request: HEAD https://huggingface.co/Systran/faster-whisper-base/resolve/ebe41f70d5b6dfa9166e2c581c45c9c0cfc57b66/model.bin "HTTP/1.1 302 Found"
+2026-06-26 15:53:05,754 [WARNING] huggingface_hub.utils._http: Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-06-26 15:53:05,773 [INFO] httpx: HTTP Request: HEAD https://huggingface.co/Systran/faster-whisper-base/resolve/ebe41f70d5b6dfa9166e2c581c45c9c0cfc57b66/vocabulary.txt "HTTP/1.1 307 Temporary Redirect"
+2026-06-26 15:53:05,778 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/resolve-cache/models/Systran/faster-whisper-base/ebe41f70d5b6dfa9166e2c581c45c9c0cfc57b66/config.json "HTTP/1.1 200 OK"
+2026-06-26 15:53:05,780 [INFO] httpx: HTTP Request: HEAD https://huggingface.co/Systran/faster-whisper-base/resolve/ebe41f70d5b6dfa9166e2c581c45c9c0cfc57b66/tokenizer.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-26 15:53:05,804 [INFO] httpx: HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Systran/faster-whisper-base/ebe41f70d5b6dfa9166e2c581c45c9c0cfc57b66/vocabulary.txt "HTTP/1.1 200 OK"
+2026-06-26 15:53:05,815 [INFO] httpx: HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Systran/faster-whisper-base/ebe41f70d5b6dfa9166e2c581c45c9c0cfc57b66/tokenizer.json "HTTP/1.1 200 OK"
+2026-06-26 15:53:05,839 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/resolve-cache/models/Systran/faster-whisper-base/ebe41f70d5b6dfa9166e2c581c45c9c0cfc57b66/vocabulary.txt "HTTP/1.1 200 OK"
+2026-06-26 15:53:05,853 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/resolve-cache/models/Systran/faster-whisper-base/ebe41f70d5b6dfa9166e2c581c45c9c0cfc57b66/tokenizer.json "HTTP/1.1 200 OK"
+2026-06-26 15:53:39,388 [INFO] pipeline.transcriber: Whisper model loaded successfully.
+2026-06-26 15:53:39,391 [INFO] pipeline.transcriber: Starting audio transcription for audio.wav
+2026-06-26 15:53:39,885 [INFO] faster_whisper: Processing audio with duration 00:17.508
+2026-06-26 15:53:43,157 [INFO] faster_whisper: Detected language 'en' with probability 0.99
+2026-06-26 15:53:43,167 [INFO] pipeline.transcriber: Detected language: 'en' with probability 0.99
+2026-06-26 15:53:47,650 [INFO] pipeline.transcriber: Transcription completed. Extracted 5 segments.
+2026-06-26 15:53:47,806 [INFO] pipeline.frame_extractor: Extracting frames from video: video.mp4 (FPS: 25.00, Duration: 17.52s)
+2026-06-26 15:53:47,807 [INFO] pipeline.frame_extractor: Target interval: 1.0s
+2026-06-26 15:53:49,137 [INFO] pipeline.frame_extractor: Frame extraction completed. Extracted 18 frames.
+2026-06-26 15:53:49,143 [INFO] pipeline.ocr_engine: Initializing EasyOCR reader for languages: ['en', 'hi', 'gu']
+2026-06-26 15:53:49,147 [WARNING] easyocr.easyocr: Neither CUDA nor MPS are available - defaulting to CPU. Note: This module is much faster with a GPU.
+2026-06-26 15:53:49,250 [WARNING] easyocr.easyocr: Downloading detection model, please wait. This may take several minutes depending upon your network connection.
+2026-06-26 15:54:57,842 [INFO] easyocr.easyocr: Download complete
+2026-06-26 15:54:57,842 [ERROR] pipeline.ocr_engine: Failed to initialize EasyOCR: ({'gu'}, 'is not supported')
+2026-06-26 15:54:57,843 [INFO] pipeline.ocr_engine: Retrying EasyOCR initialization with CPU-only fallback...
+2026-06-26 15:54:57,844 [WARNING] easyocr.easyocr: Using CPU. Note: This module is much faster with a GPU.
+2026-06-26 15:54:58,091 [ERROR] pipeline.ocr_engine: Failed CPU-only initialization of EasyOCR: ({'gu'}, 'is not supported')
+2026-06-26 15:54:58,091 [ERROR] FactLensOrchestrator: OCR step failed: Could not load EasyOCR models: ({'gu'}, 'is not supported')
+2026-06-26 15:54:58,099 [INFO] pipeline.frame_extractor: Temporary frames directory cleaned up successfully.
+2026-06-26 15:54:58,101 [INFO] FactLensOrchestrator: Temporary audio WAV file deleted.
+2026-06-26 15:54:58,101 [INFO] pipeline.merger: Merging speech transcription and OCR visual text...
+2026-06-26 15:54:58,102 [INFO] pipeline.merger: Merging complete. Generated 5 chronological timeline entries.
+2026-06-26 15:54:58,105 [INFO] database.mongo_client: Connecting to MongoDB at mongodb://localhost:27017/
+2026-06-26 15:54:58,204 [INFO] database.mongo_client: MongoDB connected and indexes created successfully.
+2026-06-26 15:54:58,206 [INFO] database.mongo_client: Successfully inserted video transcript. ObjectId: 6a3e537a9bba089afcdb2e93
+2026-06-26 15:54:58,208 [INFO] database.mongo_client: MongoDB client connection closed.

@@ -1,0 +1,18 @@
+[project]
+name = "factlens"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "easyocr>=1.7.2",
+    "faster-whisper>=1.2.1",
+    "ffmpeg-python>=0.2.0",
+    "moviepy>=2.2.1",
+    "numpy>=2.5.0",
+    "opencv-python>=4.13.0.92",
+    "pillow>=11.3.0",
+    "pymongo>=4.17.0",
+    "python-dotenv>=1.2.2",
+    "tqdm>=4.68.3",
+]
