@@ -10,6 +10,14 @@ from typing import Any, Dict, List
 # Add the project root directory to python path if run as a script
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+# Reconfigure stdout and stderr to UTF-8 for Windows console support
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
+except AttributeError:
+    # Fallback for old python versions if reconfigure is not available
+    pass
+
 from config import Config
 from database.mongo_client import MongoDatabase
 from utils.video import validate_video_file, get_video_metadata, VideoMetadataError
@@ -19,6 +27,8 @@ from pipeline.transcriber import transcribe_audio, TranscriberError
 from pipeline.frame_extractor import extract_frames, FrameExtractionError, cleanup_frames_dir
 from pipeline.ocr_engine import OCREngine, OCREngineError
 from pipeline.merger import merge_speech_and_ocr, compile_complete_text
+from pipeline.claim_extractor import extract_claims, ClaimExtractorError
+from pipeline.verifier import verify_claims, VerifierError
 
 # Setup logging configuration
 logging.basicConfig(
@@ -161,23 +171,83 @@ def process_video_pipeline(video_path_str: str, interval: float, threshold: floa
     # 7. Compile Final Unified Text
     complete_text = compile_complete_text(merged_transcript)
     
+    # 8. Extract Factual Claims using Gemini (Step 8 & 9)
+    claims = []
+    try:
+        claims = extract_claims(complete_text)
+    except ClaimExtractorError as e:
+        logger.error(f"Claim extraction failed: {e}")
+    except Exception as e:
+        logger.error(f"Unexpected error during claim extraction: {e}")
+        
+    # 9. Verify each Claim using DuckDuckGo search + RAG (Step 10, 11, 12)
+    verifications = []
+    if claims:
+        try:
+            verifications = verify_claims(claims)
+        except VerifierError as e:
+            logger.error(f"Verification failed: {e}")
+        except Exception as e:
+            logger.error(f"Unexpected error during claim verification: {e}")
+    else:
+        logger.warning("No factual claims extracted to verify.")
+        
     processing_time = round(time.time() - start_time, 2)
     
-    # Construct final document structure (Feature 7)
+    # 10. Format claims and verifications into the required MongoDB schema (Step 13)
+    formatted_claims = {}
+    for idx, claim in enumerate(claims, start=1):
+        claim_key = f"Claim {idx}"
+        # Find matching verification
+        verification = next((v for v in verifications if v["claim_id"] == claim["claim_id"]), None)
+        if verification:
+            formatted_claims[claim_key] = {
+                "original_claim": claim["claim_text"],
+                "verification_response": verification["explanation"],
+                "verdict": verification["verdict"],
+                "confidence": verification["confidence"],
+                "evidence_summary": verification["evidence_summary"]
+            }
+        else:
+            formatted_claims[claim_key] = {
+                "original_claim": claim["claim_text"],
+                "verification_response": "Verification skipped or failed.",
+                "verdict": "Needs Human Verification",
+                "confidence": 0.0,
+                "evidence_summary": "No evidence retrieved."
+            }
+            
+    # Construct final document structure for MongoDB
     document = {
+        # Video metadata (Step 1)
         "filename": metadata["filename"],
-        "path": metadata["path"],
         "duration": metadata["duration"],
         "fps": metadata["fps"],
         "resolution": metadata["resolution"],
-        "language": detected_language,
-        "speech": speech_segments,
-        "ocr": ocr_results,
-        "merged_transcript": merged_transcript,
-        "complete_text": complete_text,
-        "created_at": datetime.utcnow().isoformat() + "Z",
-        "processing_time": f"{processing_time}s",
-        "model": f"faster-whisper-{Config.WHISPER_MODEL}"
+        "codec": metadata["codec"],
+        "size_bytes": metadata["size_bytes"],
+        "size_mb": metadata["size_mb"],
+        "upload_timestamp": datetime.fromtimestamp(os.path.getmtime(metadata["path"])).isoformat() + "Z",
+        
+        # Complete merged transcript (Step 6)
+        "complete_merged_transcript": complete_text,
+        
+        # Claims list formatted as Claim 1, Claim 2, ... (Step 13)
+        "claims": formatted_claims,
+        
+        # Processing timestamps
+        "processing_timestamps": {
+            "started_at": datetime.fromtimestamp(start_time).isoformat() + "Z",
+            "completed_at": datetime.utcnow().isoformat() + "Z",
+            "processing_time": f"{processing_time}s"
+        },
+        
+        # Model information
+        "model_info": {
+            "transcription_model": f"faster-whisper-{Config.WHISPER_MODEL}",
+            "claim_extraction_model": Config.GEMINI_MODEL,
+            "verification_model": Config.GEMINI_MODEL
+        }
     }
     
     return document
@@ -193,7 +263,7 @@ def main() -> None:
         threshold=args.threshold
     )
     
-    # 8. Persist to MongoDB (Feature 7 & 14)
+    # Persist to MongoDB (Step 13)
     db_id = "Not Inserted"
     db = MongoDatabase(uri=Config.MONGO_URI, db_name=Config.DB_NAME, collection_name=Config.COLLECTION_NAME)
     try:
@@ -206,20 +276,31 @@ def main() -> None:
     finally:
         db.close()
 
-    # 9. Output Statistics display (Feature 18)
-    print("\n" + "=" * 50)
-    print("                 FACTLENS SUMMARY                ")
-    print("=" * 50)
+    # Output Statistics and Verified Claims display (Feature 18)
+    print("\n" + "=" * 60)
+    print("                 FACTLENS PIPELINE SUMMARY                ")
+    print("=" * 60)
     print(f"Video File:       {document['filename']}")
     print(f"Resolution:       {document['resolution']}")
     print(f"FPS:              {document['fps']}")
     print(f"Duration:         {document['duration']} seconds")
-    print(f"Language:         {document['language']}")
-    print(f"Speech Segments:  {len(document['speech'])}")
-    print(f"OCR Detections:   {len(document['ocr'])}")
-    print(f"Processing Time:  {document['processing_time']}")
+    print(f"Codec:            {document['codec']}")
+    print(f"Size:             {document['size_mb']} MB")
+    print(f"Processing Time:  {document['processing_timestamps']['processing_time']}")
     print(f"MongoDB ObjectId: {db_id}")
-    print("=" * 50 + "\n")
+    print("=" * 60)
+    
+    claims_dict = document.get("claims", {})
+    print(f"\nExtracted & Verified Claims ({len(claims_dict)}):")
+    print("-" * 60)
+    for c_id, c_val in claims_dict.items():
+        print(f"\n[{c_id}]")
+        print(f"  Claim:      {c_val['original_claim']}")
+        print(f"  Verdict:    {c_val['verdict']} (Confidence: {c_val['confidence']})")
+        print(f"  Summary:    {c_val['evidence_summary']}")
+        print(f"  Reasoning:  {c_val['verification_response']}")
+        print("-" * 60)
+    print("=" * 60 + "\n")
 
 if __name__ == "__main__":
     main()

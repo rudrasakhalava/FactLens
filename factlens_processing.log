@@ -76,3 +76,432 @@
 2026-06-26 16:30:25,175 [INFO] database.mongo_client: MongoDB connected and indexes created successfully.
 2026-06-26 16:30:25,183 [INFO] database.mongo_client: Successfully inserted video transcript. ObjectId: 6a3e5bc9d1904c0cca3488f4
 2026-06-26 16:30:25,185 [INFO] database.mongo_client: MongoDB client connection closed.
+2026-07-01 13:58:52,923 [INFO] FactLensOrchestrator: ============================================================
+2026-07-01 13:58:52,924 [INFO] FactLensOrchestrator: Starting FactLens pipeline for: video.mp4
+2026-07-01 13:58:52,924 [INFO] FactLensOrchestrator: ============================================================
+2026-07-01 13:58:53,226 [INFO] utils.video: Successfully extracted video metadata: video.mp4 (720x1280, 17.52s)
+2026-07-01 13:58:53,241 [INFO] pipeline.audio_extractor: Extracting audio using command: ffmpeg -i D:\factlens_1\video.mp4 -vn -acodec pcm_s16le -ar 16000 -ac 1 D:\factlens_1\temp\audio.wav -y
+2026-07-01 13:58:53,943 [INFO] pipeline.audio_extractor: Audio extracted successfully: temp/audio.wav
+2026-07-01 13:58:53,943 [INFO] pipeline.transcriber: Loading Whisper model 'base' on device 'cpu'...
+2026-07-01 13:58:58,414 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/agent-harnesses "HTTP/1.1 200 OK"
+2026-07-01 13:58:58,691 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base/revision/main "HTTP/1.1 200 OK"
+2026-07-01 13:59:00,523 [INFO] pipeline.transcriber: Whisper model loaded successfully.
+2026-07-01 13:59:00,524 [INFO] pipeline.transcriber: Starting audio transcription for audio.wav
+2026-07-01 13:59:00,882 [INFO] faster_whisper: Processing audio with duration 00:17.508
+2026-07-01 13:59:03,812 [INFO] faster_whisper: Detected language 'en' with probability 0.99
+2026-07-01 13:59:03,822 [INFO] pipeline.transcriber: Detected language: 'en' with probability 0.99
+2026-07-01 13:59:09,940 [INFO] pipeline.transcriber: Transcription completed. Extracted 5 segments.
+2026-07-01 13:59:10,055 [INFO] pipeline.frame_extractor: Extracting frames from video: video.mp4 (FPS: 25.00, Duration: 17.52s)
+2026-07-01 13:59:10,055 [INFO] pipeline.frame_extractor: Target interval: 1.0s
+2026-07-01 13:59:11,945 [INFO] pipeline.frame_extractor: Frame extraction completed. Extracted 18 frames.
+2026-07-01 13:59:11,953 [INFO] pipeline.ocr_engine: Initializing EasyOCR reader for languages: ['en', 'hi', 'gu']
+2026-07-01 13:59:11,955 [WARNING] easyocr.easyocr: Neither CUDA nor MPS are available - defaulting to CPU. Note: This module is much faster with a GPU.
+2026-07-01 13:59:12,507 [ERROR] pipeline.ocr_engine: Failed to initialize EasyOCR: ({'gu'}, 'is not supported')
+2026-07-01 13:59:12,507 [INFO] pipeline.ocr_engine: Retrying EasyOCR initialization with CPU-only fallback...
+2026-07-01 13:59:12,508 [WARNING] easyocr.easyocr: Using CPU. Note: This module is much faster with a GPU.
+2026-07-01 13:59:12,890 [ERROR] pipeline.ocr_engine: Failed CPU-only initialization of EasyOCR: ({'gu'}, 'is not supported')
+2026-07-01 13:59:12,890 [ERROR] FactLensOrchestrator: OCR step failed: Could not load EasyOCR models: ({'gu'}, 'is not supported')
+2026-07-01 13:59:12,900 [INFO] pipeline.frame_extractor: Temporary frames directory cleaned up successfully.
+2026-07-01 13:59:12,901 [INFO] FactLensOrchestrator: Temporary audio WAV file deleted.
+2026-07-01 13:59:12,901 [INFO] pipeline.merger: Merging speech transcription and OCR visual text...
+2026-07-01 13:59:12,903 [INFO] pipeline.merger: Merging complete. Generated 5 chronological timeline entries.
+2026-07-01 13:59:12,904 [ERROR] pipeline.claim_extractor: Gemini API key is not configured. Extraction aborted.
+2026-07-01 13:59:12,904 [ERROR] FactLensOrchestrator: Claim extraction failed: Gemini API key is missing. Please add 'GEMINI_API_KEY' to your environment or .env file.
+2026-07-01 13:59:12,905 [WARNING] FactLensOrchestrator: No factual claims extracted to verify.
+2026-07-01 13:59:12,908 [INFO] database.mongo_client: Connecting to MongoDB at mongodb://localhost:27017/
+2026-07-01 13:59:12,966 [INFO] database.mongo_client: MongoDB connected and indexes created successfully.
+2026-07-01 13:59:12,978 [INFO] database.mongo_client: Successfully inserted video transcript. ObjectId: 6a44cfd8bfc50dd9caf19a34
+2026-07-01 13:59:12,981 [INFO] database.mongo_client: MongoDB client connection closed.
+2026-07-01 14:00:38,875 [INFO] FactLensOrchestrator: ============================================================
+2026-07-01 14:00:38,875 [INFO] FactLensOrchestrator: Starting FactLens pipeline for: video.mp4
+2026-07-01 14:00:38,876 [INFO] FactLensOrchestrator: ============================================================
+2026-07-01 14:00:38,901 [INFO] utils.video: Successfully extracted video metadata: video.mp4 (720x1280, 17.52s)
+2026-07-01 14:00:38,924 [INFO] pipeline.audio_extractor: Extracting audio using command: ffmpeg -i D:\factlens_1\video.mp4 -vn -acodec pcm_s16le -ar 16000 -ac 1 D:\factlens_1\temp\audio.wav -y
+2026-07-01 14:00:39,080 [INFO] pipeline.audio_extractor: Audio extracted successfully: temp/audio.wav
+2026-07-01 14:00:39,081 [INFO] pipeline.transcriber: Loading Whisper model 'base' on device 'cpu'...
+2026-07-01 14:00:40,108 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base/revision/main "HTTP/1.1 200 OK"
+2026-07-01 14:00:41,718 [INFO] pipeline.transcriber: Whisper model loaded successfully.
+2026-07-01 14:00:41,718 [INFO] pipeline.transcriber: Starting audio transcription for audio.wav
+2026-07-01 14:00:42,019 [INFO] faster_whisper: Processing audio with duration 00:17.508
+2026-07-01 14:00:44,818 [INFO] faster_whisper: Detected language 'en' with probability 0.99
+2026-07-01 14:00:44,825 [INFO] pipeline.transcriber: Detected language: 'en' with probability 0.99
+2026-07-01 14:00:50,868 [INFO] pipeline.transcriber: Transcription completed. Extracted 5 segments.
+2026-07-01 14:00:50,982 [INFO] pipeline.frame_extractor: Extracting frames from video: video.mp4 (FPS: 25.00, Duration: 17.52s)
+2026-07-01 14:00:50,982 [INFO] pipeline.frame_extractor: Target interval: 1.0s
+2026-07-01 14:00:52,842 [INFO] pipeline.frame_extractor: Frame extraction completed. Extracted 18 frames.
+2026-07-01 14:00:52,850 [INFO] pipeline.ocr_engine: Initializing EasyOCR reader for languages: ['en', 'hi']
+2026-07-01 14:00:52,855 [WARNING] easyocr.easyocr: Neither CUDA nor MPS are available - defaulting to CPU. Note: This module is much faster with a GPU.
+2026-07-01 14:00:53,278 [WARNING] easyocr.easyocr: Downloading recognition model, please wait. This may take several minutes depending upon your network connection.
+2026-07-01 14:00:54,424 [ERROR] pipeline.ocr_engine: Failed to initialize EasyOCR: 'charmap' codec can't encode character '\u2588' in position 12: character maps to <undefined>
+2026-07-01 14:00:54,425 [INFO] pipeline.ocr_engine: Retrying EasyOCR initialization with CPU-only fallback...
+2026-07-01 14:00:54,426 [WARNING] easyocr.easyocr: Using CPU. Note: This module is much faster with a GPU.
+2026-07-01 14:00:54,831 [WARNING] easyocr.easyocr: Downloading recognition model, please wait. This may take several minutes depending upon your network connection.
+2026-07-01 14:00:55,291 [ERROR] pipeline.ocr_engine: Failed CPU-only initialization of EasyOCR: 'charmap' codec can't encode character '\u2588' in position 12: character maps to <undefined>
+2026-07-01 14:00:55,291 [ERROR] FactLensOrchestrator: OCR step failed: Could not load EasyOCR models: 'charmap' codec can't encode character '\u2588' in position 12: character maps to <undefined>
+2026-07-01 14:00:55,296 [INFO] pipeline.frame_extractor: Temporary frames directory cleaned up successfully.
+2026-07-01 14:00:55,297 [INFO] FactLensOrchestrator: Temporary audio WAV file deleted.
+2026-07-01 14:00:55,297 [INFO] pipeline.merger: Merging speech transcription and OCR visual text...
+2026-07-01 14:00:55,297 [INFO] pipeline.merger: Merging complete. Generated 5 chronological timeline entries.
+2026-07-01 14:00:55,297 [ERROR] pipeline.claim_extractor: Gemini API key is not configured. Extraction aborted.
+2026-07-01 14:00:55,298 [ERROR] FactLensOrchestrator: Claim extraction failed: Gemini API key is missing. Please add 'GEMINI_API_KEY' to your environment or .env file.
+2026-07-01 14:00:55,298 [WARNING] FactLensOrchestrator: No factual claims extracted to verify.
+2026-07-01 14:00:55,298 [INFO] database.mongo_client: Connecting to MongoDB at mongodb://localhost:27017/
+2026-07-01 14:00:55,339 [INFO] database.mongo_client: MongoDB connected and indexes created successfully.
+2026-07-01 14:00:55,341 [INFO] database.mongo_client: Successfully inserted video transcript. ObjectId: 6a44d03fadeb177ec9bac134
+2026-07-01 14:00:55,342 [INFO] database.mongo_client: MongoDB client connection closed.
+2026-07-01 14:01:25,245 [INFO] FactLensOrchestrator: ============================================================
+2026-07-01 14:01:25,245 [INFO] FactLensOrchestrator: Starting FactLens pipeline for: video.mp4
+2026-07-01 14:01:25,245 [INFO] FactLensOrchestrator: ============================================================
+2026-07-01 14:01:25,277 [INFO] utils.video: Successfully extracted video metadata: video.mp4 (720x1280, 17.52s)
+2026-07-01 14:01:25,299 [INFO] pipeline.audio_extractor: Extracting audio using command: ffmpeg -i D:\factlens_1\video.mp4 -vn -acodec pcm_s16le -ar 16000 -ac 1 D:\factlens_1\temp\audio.wav -y
+2026-07-01 14:01:25,470 [INFO] pipeline.audio_extractor: Audio extracted successfully: temp/audio.wav
+2026-07-01 14:01:25,471 [INFO] pipeline.transcriber: Loading Whisper model 'base' on device 'cpu'...
+2026-07-01 14:01:26,440 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base/revision/main "HTTP/1.1 200 OK"
+2026-07-01 14:01:28,061 [INFO] pipeline.transcriber: Whisper model loaded successfully.
+2026-07-01 14:01:28,061 [INFO] pipeline.transcriber: Starting audio transcription for audio.wav
+2026-07-01 14:01:28,386 [INFO] faster_whisper: Processing audio with duration 00:17.508
+2026-07-01 14:01:31,221 [INFO] faster_whisper: Detected language 'en' with probability 0.99
+2026-07-01 14:01:31,226 [INFO] pipeline.transcriber: Detected language: 'en' with probability 0.99
+2026-07-01 14:01:37,298 [INFO] pipeline.transcriber: Transcription completed. Extracted 5 segments.
+2026-07-01 14:01:37,425 [INFO] pipeline.frame_extractor: Extracting frames from video: video.mp4 (FPS: 25.00, Duration: 17.52s)
+2026-07-01 14:01:37,425 [INFO] pipeline.frame_extractor: Target interval: 1.0s
+2026-07-01 14:01:39,561 [INFO] pipeline.frame_extractor: Frame extraction completed. Extracted 18 frames.
+2026-07-01 14:01:39,575 [INFO] pipeline.ocr_engine: Initializing EasyOCR reader for languages: ['en', 'hi']
+2026-07-01 14:01:39,577 [WARNING] easyocr.easyocr: Neither CUDA nor MPS are available - defaulting to CPU. Note: This module is much faster with a GPU.
+2026-07-01 14:01:40,203 [WARNING] easyocr.easyocr: Downloading recognition model, please wait. This may take several minutes depending upon your network connection.
+2026-07-01 14:02:37,281 [INFO] easyocr.easyocr: Download complete.
+2026-07-01 14:02:44,306 [INFO] pipeline.ocr_engine: EasyOCR reader initialized successfully.
+2026-07-01 14:02:44,307 [INFO] pipeline.ocr_engine: Starting OCR processing for 18 frames...
+2026-07-01 14:06:33,369 [INFO] pipeline.ocr_engine: Raw OCR completed. Extracted 17 text boxes above threshold 0.4.
+2026-07-01 14:06:33,393 [INFO] pipeline.ocr_engine: Applying OCR deduplication across nearby frames...
+2026-07-01 14:06:33,416 [INFO] pipeline.ocr_engine: Deduplication complete. Retained 12 unique OCR events.
+2026-07-01 14:06:33,433 [INFO] pipeline.frame_extractor: Temporary frames directory cleaned up successfully.
+2026-07-01 14:06:33,437 [INFO] FactLensOrchestrator: Temporary audio WAV file deleted.
+2026-07-01 14:06:33,439 [INFO] pipeline.merger: Merging speech transcription and OCR visual text...
+2026-07-01 14:06:33,444 [INFO] pipeline.merger: Merging complete. Generated 5 chronological timeline entries.
+2026-07-01 14:06:33,448 [ERROR] pipeline.claim_extractor: Gemini API key is not configured. Extraction aborted.
+2026-07-01 14:06:33,450 [ERROR] FactLensOrchestrator: Claim extraction failed: Gemini API key is missing. Please add 'GEMINI_API_KEY' to your environment or .env file.
+2026-07-01 14:06:33,450 [WARNING] FactLensOrchestrator: No factual claims extracted to verify.
+2026-07-01 14:06:33,536 [INFO] database.mongo_client: Connecting to MongoDB at mongodb://localhost:27017/
+2026-07-01 14:06:34,152 [INFO] database.mongo_client: MongoDB connected and indexes created successfully.
+2026-07-01 14:06:34,154 [INFO] database.mongo_client: Successfully inserted video transcript. ObjectId: 6a44d1926ed64fde1e7f1a57
+2026-07-01 14:06:34,157 [INFO] database.mongo_client: MongoDB client connection closed.
+2026-07-01 14:10:36,277 [INFO] FactLensOrchestrator: ============================================================
+2026-07-01 14:10:36,278 [INFO] FactLensOrchestrator: Starting FactLens pipeline for: video.mp4
+2026-07-01 14:10:36,279 [INFO] FactLensOrchestrator: ============================================================
+2026-07-01 14:10:36,368 [INFO] utils.video: Successfully extracted video metadata: video.mp4 (720x1280, 17.52s)
+2026-07-01 14:10:36,381 [INFO] pipeline.audio_extractor: Extracting audio using command: ffmpeg -i D:\factlens_1\video.mp4 -vn -acodec pcm_s16le -ar 16000 -ac 1 D:\factlens_1\temp\audio.wav -y
+2026-07-01 14:10:36,542 [INFO] pipeline.audio_extractor: Audio extracted successfully: temp/audio.wav
+2026-07-01 14:10:36,543 [INFO] pipeline.transcriber: Loading Whisper model 'base' on device 'cpu'...
+2026-07-01 14:10:37,631 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base/revision/main "HTTP/1.1 200 OK"
+2026-07-01 14:10:39,244 [INFO] pipeline.transcriber: Whisper model loaded successfully.
+2026-07-01 14:10:39,245 [INFO] pipeline.transcriber: Starting audio transcription for audio.wav
+2026-07-01 14:10:39,549 [INFO] faster_whisper: Processing audio with duration 00:17.508
+2026-07-01 14:10:42,740 [INFO] faster_whisper: Detected language 'en' with probability 0.99
+2026-07-01 14:10:42,752 [INFO] pipeline.transcriber: Detected language: 'en' with probability 0.99
+2026-07-01 14:10:49,281 [INFO] pipeline.transcriber: Transcription completed. Extracted 5 segments.
+2026-07-01 14:10:49,384 [INFO] pipeline.frame_extractor: Extracting frames from video: video.mp4 (FPS: 25.00, Duration: 17.52s)
+2026-07-01 14:10:49,385 [INFO] pipeline.frame_extractor: Target interval: 1.0s
+2026-07-01 14:10:51,688 [INFO] pipeline.frame_extractor: Frame extraction completed. Extracted 18 frames.
+2026-07-01 14:10:51,699 [INFO] pipeline.ocr_engine: Initializing EasyOCR reader for languages: ['en', 'hi']
+2026-07-01 14:10:51,701 [WARNING] easyocr.easyocr: Neither CUDA nor MPS are available - defaulting to CPU. Note: This module is much faster with a GPU.
+2026-07-01 14:10:58,409 [INFO] pipeline.ocr_engine: EasyOCR reader initialized successfully.
+2026-07-01 14:10:58,409 [INFO] pipeline.ocr_engine: Starting OCR processing for 18 frames...
+2026-07-01 14:14:46,171 [INFO] pipeline.ocr_engine: Raw OCR completed. Extracted 17 text boxes above threshold 0.4.
+2026-07-01 14:14:46,171 [INFO] pipeline.ocr_engine: Applying OCR deduplication across nearby frames...
+2026-07-01 14:14:46,174 [INFO] pipeline.ocr_engine: Deduplication complete. Retained 12 unique OCR events.
+2026-07-01 14:14:46,182 [INFO] pipeline.frame_extractor: Temporary frames directory cleaned up successfully.
+2026-07-01 14:14:46,183 [INFO] FactLensOrchestrator: Temporary audio WAV file deleted.
+2026-07-01 14:14:46,183 [INFO] pipeline.merger: Merging speech transcription and OCR visual text...
+2026-07-01 14:14:46,183 [INFO] pipeline.merger: Merging complete. Generated 5 chronological timeline entries.
+2026-07-01 14:14:46,183 [WARNING] pipeline.claim_extractor: Gemini API key is not configured. Falling back to Heuristic Demo Mode.
+2026-07-01 14:14:46,184 [INFO] pipeline.claim_extractor: [Heuristic] Extracted: [Claim 1] (Historical) - Plato and Xenophon were students of Socrates who immortalized his dialogues.
+2026-07-01 14:14:46,184 [INFO] pipeline.claim_extractor: [Heuristic] Extracted: [Claim 2] (Historical) - Socrates' dialogues are recorded in works such as Apology, Crito, and Symposium.
+2026-07-01 14:14:46,184 [WARNING] pipeline.verifier: Gemini API key is not configured. Running Heuristic Verification using DuckDuckGo search + local rule engine.
+2026-07-01 14:14:46,184 [INFO] pipeline.verifier: [Claim 1] (Heuristic) Verifying: 'Plato and Xenophon were students of Socrates who immortalized his dialogues.'
+2026-07-01 14:14:46,184 [INFO] pipeline.verifier: Executing DuckDuckGo search for: 'Plato and Xenophon were students of Socrates who immortalized his dialogues.'
+2026-07-01 14:14:46,556 [INFO] primp: response: https://www.bing.com/search?q=Plato+and+Xenophon+were+students+of+Socrates+who+immortalized+his+dialogues. 200
+2026-07-01 14:14:46,875 [INFO] primp: response: https://www.bing.com/search?q=Plato+and+Xenophon+were+students+of+Socrates+who+immortalized+his+dialogues. 200
+2026-07-01 14:14:47,575 [INFO] primp: response: https://www.bing.com/search?q=Plato+and+Xenophon+were+students+of+Socrates+who+immortalized+his+dialogues. 200
+2026-07-01 14:14:48,120 [INFO] pipeline.verifier: [Claim 1] (Heuristic) Verification complete. Verdict: True
+2026-07-01 14:14:48,120 [INFO] pipeline.verifier: [Claim 2] (Heuristic) Verifying: 'Socrates' dialogues are recorded in works such as Apology, Crito, and Symposium.'
+2026-07-01 14:14:48,120 [INFO] pipeline.verifier: Executing DuckDuckGo search for: 'Socrates' dialogues are recorded in works such as Apology, Crito, and Symposium.'
+2026-07-01 14:14:48,473 [INFO] primp: response: https://www.bing.com/search?q=Socrates%27+dialogues+are+recorded+in+works+such+as+Apology%2C+Crito%2C+and+Symposium. 200
+2026-07-01 14:14:48,726 [INFO] primp: response: https://www.bing.com/search?q=Socrates%27+dialogues+are+recorded+in+works+such+as+Apology%2C+Crito%2C+and+Symposium. 200
+2026-07-01 14:14:49,076 [INFO] primp: response: https://www.bing.com/search?q=Socrates%27+dialogues+are+recorded+in+works+such+as+Apology%2C+Crito%2C+and+Symposium. 200
+2026-07-01 14:14:49,122 [INFO] pipeline.verifier: [Claim 2] (Heuristic) Verification complete. Verdict: True
+2026-07-01 14:14:49,133 [INFO] database.mongo_client: Connecting to MongoDB at mongodb://localhost:27017/
+2026-07-01 14:14:49,155 [INFO] database.mongo_client: MongoDB connected and indexes created successfully.
+2026-07-01 14:14:49,158 [INFO] database.mongo_client: Successfully inserted video transcript. ObjectId: 6a44d3811353527e0ac8af7a
+2026-07-01 14:14:49,160 [INFO] database.mongo_client: MongoDB client connection closed.
+2026-07-01 14:18:47,841 [INFO] FactLensOrchestrator: ============================================================
+2026-07-01 14:18:47,842 [INFO] FactLensOrchestrator: Starting FactLens pipeline for: video.mp4
+2026-07-01 14:18:47,842 [INFO] FactLensOrchestrator: ============================================================
+2026-07-01 14:18:47,871 [INFO] utils.video: Successfully extracted video metadata: video.mp4 (720x1280, 17.52s)
+2026-07-01 14:18:47,887 [INFO] pipeline.audio_extractor: Extracting audio using command: ffmpeg -i D:\factlens_1\video.mp4 -vn -acodec pcm_s16le -ar 16000 -ac 1 D:\factlens_1\temp\audio.wav -y
+2026-07-01 14:18:48,070 [INFO] pipeline.audio_extractor: Audio extracted successfully: temp/audio.wav
+2026-07-01 14:18:48,070 [INFO] pipeline.transcriber: Loading Whisper model 'base' on device 'cpu'...
+2026-07-01 14:18:49,056 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base/revision/main "HTTP/1.1 200 OK"
+2026-07-01 14:18:50,630 [INFO] pipeline.transcriber: Whisper model loaded successfully.
+2026-07-01 14:18:50,631 [INFO] pipeline.transcriber: Starting audio transcription for audio.wav
+2026-07-01 14:18:50,940 [INFO] faster_whisper: Processing audio with duration 00:17.508
+2026-07-01 14:18:53,646 [INFO] faster_whisper: Detected language 'en' with probability 0.99
+2026-07-01 14:18:53,651 [INFO] pipeline.transcriber: Detected language: 'en' with probability 0.99
+2026-07-01 14:18:59,646 [INFO] pipeline.transcriber: Transcription completed. Extracted 5 segments.
+2026-07-01 14:18:59,756 [INFO] pipeline.frame_extractor: Extracting frames from video: video.mp4 (FPS: 25.00, Duration: 17.52s)
+2026-07-01 14:18:59,756 [INFO] pipeline.frame_extractor: Target interval: 1.0s
+2026-07-01 14:19:01,635 [INFO] pipeline.frame_extractor: Frame extraction completed. Extracted 18 frames.
+2026-07-01 14:19:01,649 [INFO] pipeline.ocr_engine: Initializing EasyOCR reader for languages: ['en', 'hi']
+2026-07-01 14:19:01,651 [WARNING] easyocr.easyocr: Neither CUDA nor MPS are available - defaulting to CPU. Note: This module is much faster with a GPU.
+2026-07-01 14:19:09,853 [INFO] pipeline.ocr_engine: EasyOCR reader initialized successfully.
+2026-07-01 14:19:09,854 [INFO] pipeline.ocr_engine: Starting OCR processing for 18 frames...
+2026-07-01 14:22:50,350 [INFO] pipeline.ocr_engine: Raw OCR completed. Extracted 17 text boxes above threshold 0.4.
+2026-07-01 14:22:50,350 [INFO] pipeline.ocr_engine: Applying OCR deduplication across nearby frames...
+2026-07-01 14:22:50,353 [INFO] pipeline.ocr_engine: Deduplication complete. Retained 12 unique OCR events.
+2026-07-01 14:22:50,359 [INFO] pipeline.frame_extractor: Temporary frames directory cleaned up successfully.
+2026-07-01 14:22:50,359 [INFO] FactLensOrchestrator: Temporary audio WAV file deleted.
+2026-07-01 14:22:50,360 [INFO] pipeline.merger: Merging speech transcription and OCR visual text...
+2026-07-01 14:22:50,361 [INFO] pipeline.merger: Merging complete. Generated 5 chronological timeline entries.
+2026-07-01 14:22:50,361 [WARNING] pipeline.claim_extractor: Gemini API key is not configured. Falling back to Heuristic Demo Mode.
+2026-07-01 14:22:50,361 [INFO] pipeline.claim_extractor: [Heuristic] Extracted: [Claim 1] (Historical) - Plato and Xenophon were students of Socrates who immortalized his dialogues.
+2026-07-01 14:22:50,362 [INFO] pipeline.claim_extractor: [Heuristic] Extracted: [Claim 2] (Historical) - Socrates' dialogues are recorded in works such as Apology, Crito, and Symposium.
+2026-07-01 14:22:50,362 [WARNING] pipeline.verifier: Gemini API key is not configured. Running Heuristic Verification using DuckDuckGo search + local rule engine.
+2026-07-01 14:22:50,362 [INFO] pipeline.verifier: [Claim 1] (Heuristic) Verifying: 'Plato and Xenophon were students of Socrates who immortalized his dialogues.'
+2026-07-01 14:22:50,362 [INFO] pipeline.verifier: Executing DuckDuckGo search for: 'Plato and Xenophon were students of Socrates who immortalized his dialogues.'
+2026-07-01 14:22:50,854 [INFO] primp: response: https://www.bing.com/search?q=Plato+and+Xenophon+were+students+of+Socrates+who+immortalized+his+dialogues. 200
+2026-07-01 14:22:51,879 [INFO] primp: response: https://www.bing.com/search?q=Plato+and+Xenophon+were+students+of+Socrates+who+immortalized+his+dialogues. 200
+2026-07-01 14:22:52,523 [INFO] primp: response: https://www.bing.com/search?q=Plato+and+Xenophon+were+students+of+Socrates+who+immortalized+his+dialogues. 200
+2026-07-01 14:22:53,842 [INFO] primp: response: https://www.bing.com/search?q=Plato+and+Xenophon+were+students+of+Socrates+who+immortalized+his+dialogues. 200
+2026-07-01 14:22:54,898 [INFO] primp: response: https://www.bing.com/search?q=Plato+and+Xenophon+were+students+of+Socrates+who+immortalized+his+dialogues. 200
+2026-07-01 14:22:55,958 [INFO] primp: response: https://www.bing.com/search?q=Plato+and+Xenophon+were+students+of+Socrates+who+immortalized+his+dialogues. 200
+2026-07-01 14:22:56,051 [INFO] pipeline.verifier: [Claim 1] (Heuristic) Verification complete. Verdict: True
+2026-07-01 14:22:56,052 [INFO] pipeline.verifier: [Claim 2] (Heuristic) Verifying: 'Socrates' dialogues are recorded in works such as Apology, Crito, and Symposium.'
+2026-07-01 14:22:56,052 [INFO] pipeline.verifier: Executing DuckDuckGo search for: 'Socrates' dialogues are recorded in works such as Apology, Crito, and Symposium.'
+2026-07-01 14:22:56,266 [INFO] primp: response: https://www.bing.com/search?q=Socrates%27+dialogues+are+recorded+in+works+such+as+Apology%2C+Crito%2C+and+Symposium. 200
+2026-07-01 14:22:56,372 [INFO] pipeline.verifier: [Claim 2] (Heuristic) Verification complete. Verdict: True
+2026-07-01 14:22:56,385 [INFO] database.mongo_client: Connecting to MongoDB at mongodb://localhost:27017/
+2026-07-01 14:22:56,407 [INFO] database.mongo_client: MongoDB connected and indexes created successfully.
+2026-07-01 14:22:56,409 [INFO] database.mongo_client: Successfully inserted video transcript. ObjectId: 6a44d568e41566cbeb9db08b
+2026-07-01 14:22:56,413 [INFO] database.mongo_client: MongoDB client connection closed.
+2026-07-01 14:36:51,024 [INFO] FactLensOrchestrator: ============================================================
+2026-07-01 14:36:51,025 [INFO] FactLensOrchestrator: Starting FactLens pipeline for: video.mp4
+2026-07-01 14:36:51,025 [INFO] FactLensOrchestrator: ============================================================
+2026-07-01 14:36:51,100 [INFO] utils.video: Successfully extracted video metadata: video.mp4 (720x1280, 17.52s)
+2026-07-01 14:36:51,111 [INFO] pipeline.audio_extractor: Extracting audio using command: ffmpeg -i D:\factlens_1\video.mp4 -vn -acodec pcm_s16le -ar 16000 -ac 1 D:\factlens_1\temp\audio.wav -y
+2026-07-01 14:36:51,240 [INFO] pipeline.audio_extractor: Audio extracted successfully: temp/audio.wav
+2026-07-01 14:36:51,241 [INFO] pipeline.transcriber: Loading Whisper model 'base' on device 'cpu'...
+2026-07-01 14:36:52,092 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base/revision/main "HTTP/1.1 200 OK"
+2026-07-01 14:36:55,308 [INFO] pipeline.transcriber: Whisper model loaded successfully.
+2026-07-01 14:36:55,314 [INFO] pipeline.transcriber: Starting audio transcription for audio.wav
+2026-07-01 14:36:55,903 [INFO] faster_whisper: Processing audio with duration 00:17.508
+2026-07-01 14:36:58,484 [INFO] faster_whisper: Detected language 'en' with probability 0.99
+2026-07-01 14:36:58,495 [INFO] pipeline.transcriber: Detected language: 'en' with probability 0.99
+2026-07-01 14:37:03,251 [INFO] pipeline.transcriber: Transcription completed. Extracted 5 segments.
+2026-07-01 14:37:03,433 [INFO] pipeline.frame_extractor: Extracting frames from video: video.mp4 (FPS: 25.00, Duration: 17.52s)
+2026-07-01 14:37:03,433 [INFO] pipeline.frame_extractor: Target interval: 1.0s
+2026-07-01 14:37:04,969 [INFO] pipeline.frame_extractor: Frame extraction completed. Extracted 18 frames.
+2026-07-01 14:37:04,974 [INFO] pipeline.ocr_engine: Initializing EasyOCR reader for languages: ['en', 'hi']
+2026-07-01 14:37:04,978 [WARNING] easyocr.easyocr: Neither CUDA nor MPS are available - defaulting to CPU. Note: This module is much faster with a GPU.
+2026-07-01 14:37:10,653 [INFO] pipeline.ocr_engine: EasyOCR reader initialized successfully.
+2026-07-01 14:37:10,654 [INFO] pipeline.ocr_engine: Starting OCR processing for 18 frames...
+2026-07-01 14:40:21,545 [INFO] pipeline.ocr_engine: Raw OCR completed. Extracted 17 text boxes above threshold 0.4.
+2026-07-01 14:40:21,561 [INFO] pipeline.ocr_engine: Applying OCR deduplication across nearby frames...
+2026-07-01 14:40:21,574 [INFO] pipeline.ocr_engine: Deduplication complete. Retained 12 unique OCR events.
+2026-07-01 14:40:21,586 [INFO] pipeline.frame_extractor: Temporary frames directory cleaned up successfully.
+2026-07-01 14:40:21,590 [INFO] FactLensOrchestrator: Temporary audio WAV file deleted.
+2026-07-01 14:40:21,592 [INFO] pipeline.merger: Merging speech transcription and OCR visual text...
+2026-07-01 14:40:21,596 [INFO] pipeline.merger: Merging complete. Generated 5 chronological timeline entries.
+2026-07-01 14:40:21,602 [INFO] pipeline.claim_extractor: Initializing Gemini client for claim extraction...
+2026-07-01 14:40:21,909 [INFO] pipeline.claim_extractor: Sending transcript to Gemini for claim extraction...
+2026-07-01 14:40:21,961 [INFO] google_genai.models: AFC is enabled with max remote calls: 10.
+2026-07-01 14:40:27,658 [INFO] httpx: HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-07-01 14:40:27,698 [INFO] pipeline.claim_extractor: Extracted: [Claim 1] (Historical) - Plato and Xenophon were students of Socrates.
+2026-07-01 14:40:27,699 [INFO] pipeline.claim_extractor: Extracted: [Claim 2] (Historical) - Socrates' dialogues were immortalized in works like Apology.
+2026-07-01 14:40:27,699 [INFO] pipeline.claim_extractor: Extracted: [Claim 3] (Historical) - Socrates' dialogues were immortalized in works like Crito.
+2026-07-01 14:40:27,700 [INFO] pipeline.claim_extractor: Extracted: [Claim 4] (Historical) - Socrates' dialogues were immortalized in works like Symposium.
+2026-07-01 14:40:27,700 [INFO] pipeline.claim_extractor: Successfully extracted 4 verifiable claims.
+2026-07-01 14:40:27,708 [INFO] pipeline.verifier: Initializing Gemini client for claims verification...
+2026-07-01 14:40:27,749 [INFO] pipeline.verifier: Processing verification 1/4...
+2026-07-01 14:40:27,749 [INFO] pipeline.verifier: [Claim 1] Starting verification: 'Plato and Xenophon were students of Socrates.'
+2026-07-01 14:40:27,751 [INFO] google_genai.models: AFC is enabled with max remote calls: 10.
+2026-07-01 14:40:30,028 [INFO] httpx: HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-07-01 14:40:30,034 [INFO] pipeline.verifier: Generated search queries for 'Plato and Xenophon were students of Socr...': ['Plato Xenophon students Socrates', 'Socrates pupils Plato Xenophon']
+2026-07-01 14:40:30,036 [INFO] pipeline.verifier: Executing DuckDuckGo search for: 'Plato Xenophon students Socrates'
+2026-07-01 14:40:30,449 [INFO] primp: response: https://www.bing.com/search?q=Plato+Xenophon+students+Socrates 200
+2026-07-01 14:40:31,807 [INFO] primp: response: https://www.bing.com/search?q=Plato+Xenophon+students+Socrates 200
+2026-07-01 14:40:32,605 [INFO] primp: response: https://www.bing.com/search?q=Plato+Xenophon+students+Socrates 200
+2026-07-01 14:40:33,602 [INFO] primp: response: https://www.bing.com/search?q=Plato+Xenophon+students+Socrates 200
+2026-07-01 14:40:33,942 [INFO] primp: response: https://www.bing.com/search?q=Plato+Xenophon+students+Socrates 200
+2026-07-01 14:40:34,040 [INFO] pipeline.verifier: Executing DuckDuckGo search for: 'Socrates pupils Plato Xenophon'
+2026-07-01 14:40:34,302 [INFO] primp: response: https://www.bing.com/search?q=Socrates+pupils+Plato+Xenophon 200
+2026-07-01 14:40:35,410 [INFO] primp: response: https://www.bing.com/search?q=Socrates+pupils+Plato+Xenophon 200
+2026-07-01 14:40:35,909 [INFO] primp: response: https://www.bing.com/search?q=Socrates+pupils+Plato+Xenophon 200
+2026-07-01 14:40:36,841 [INFO] primp: response: https://www.bing.com/search?q=Socrates+pupils+Plato+Xenophon 200
+2026-07-01 14:40:37,271 [INFO] primp: response: https://www.bing.com/search?q=Socrates+pupils+Plato+Xenophon 200
+2026-07-01 14:40:38,788 [INFO] primp: response: https://www.bing.com/search?q=Socrates+pupils+Plato+Xenophon 200
+2026-07-01 14:40:39,146 [INFO] pipeline.verifier: [Claim 1] Gathered 4 pieces of evidence from web search.
+2026-07-01 14:40:39,148 [INFO] google_genai.models: AFC is enabled with max remote calls: 10.
+2026-07-01 14:40:43,242 [INFO] httpx: HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-07-01 14:40:43,250 [INFO] pipeline.verifier: [Claim 1] Verification complete. Verdict: True, Confidence: 1.0
+2026-07-01 14:40:43,251 [INFO] pipeline.verifier: Processing verification 2/4...
+2026-07-01 14:40:43,252 [INFO] pipeline.verifier: [Claim 2] Starting verification: 'Socrates' dialogues were immortalized in works like Apology.'
+2026-07-01 14:40:43,257 [INFO] google_genai.models: AFC is enabled with max remote calls: 10.
+2026-07-01 14:40:45,129 [INFO] httpx: HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-07-01 14:40:45,134 [INFO] pipeline.verifier: Generated search queries for 'Socrates' dialogues were immortalized in...': ['Socrates dialogues Apology', 'Plato works Socrates dialogues']
+2026-07-01 14:40:45,135 [INFO] pipeline.verifier: Executing DuckDuckGo search for: 'Socrates dialogues Apology'
+2026-07-01 14:40:45,418 [INFO] primp: response: https://www.bing.com/search?q=Socrates+dialogues+Apology 200
+2026-07-01 14:40:46,395 [INFO] primp: response: https://www.bing.com/search?q=Socrates+dialogues+Apology 200
+2026-07-01 14:40:46,714 [INFO] primp: response: https://www.bing.com/search?q=Socrates+dialogues+Apology 200
+2026-07-01 14:40:48,036 [INFO] primp: response: https://www.bing.com/search?q=Socrates+dialogues+Apology 200
+2026-07-01 14:40:48,386 [INFO] primp: response: https://www.bing.com/search?q=Socrates+dialogues+Apology 200
+2026-07-01 14:40:49,518 [INFO] primp: response: https://www.bing.com/search?q=Socrates+dialogues+Apology 200
+2026-07-01 14:40:49,543 [INFO] pipeline.verifier: Executing DuckDuckGo search for: 'Plato works Socrates dialogues'
+2026-07-01 14:40:49,796 [INFO] primp: response: https://www.bing.com/search?q=Plato+works+Socrates+dialogues 200
+2026-07-01 14:40:50,825 [INFO] primp: response: https://www.bing.com/search?q=Plato+works+Socrates+dialogues 200
+2026-07-01 14:40:51,195 [INFO] primp: response: https://www.bing.com/search?q=Plato+works+Socrates+dialogues 200
+2026-07-01 14:40:52,189 [INFO] primp: response: https://www.bing.com/search?q=Plato+works+Socrates+dialogues 200
+2026-07-01 14:40:52,564 [INFO] primp: response: https://www.bing.com/search?q=Plato+works+Socrates+dialogues 200
+2026-07-01 14:40:52,645 [INFO] pipeline.verifier: [Claim 2] Gathered 4 pieces of evidence from web search.
+2026-07-01 14:40:52,646 [INFO] google_genai.models: AFC is enabled with max remote calls: 10.
+2026-07-01 14:40:56,084 [INFO] httpx: HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-07-01 14:40:56,088 [INFO] pipeline.verifier: [Claim 2] Verification complete. Verdict: Not Enough Evidence, Confidence: 0.6
+2026-07-01 14:40:56,088 [INFO] pipeline.verifier: Processing verification 3/4...
+2026-07-01 14:40:56,089 [INFO] pipeline.verifier: [Claim 3] Starting verification: 'Socrates' dialogues were immortalized in works like Crito.'
+2026-07-01 14:40:56,089 [INFO] google_genai.models: AFC is enabled with max remote calls: 10.
+2026-07-01 14:40:58,271 [INFO] httpx: HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-07-01 14:40:58,279 [INFO] pipeline.verifier: Generated search queries for 'Socrates' dialogues were immortalized in...': ['Socrates dialogues Crito', 'Crito Plato Socrates']
+2026-07-01 14:40:58,280 [INFO] pipeline.verifier: Executing DuckDuckGo search for: 'Socrates dialogues Crito'
+2026-07-01 14:40:58,592 [INFO] primp: response: https://www.bing.com/search?q=Socrates+dialogues+Crito 200
+2026-07-01 14:40:59,682 [INFO] primp: response: https://www.bing.com/search?q=Socrates+dialogues+Crito 200
+2026-07-01 14:41:00,026 [INFO] primp: response: https://www.bing.com/search?q=Socrates+dialogues+Crito 200
+2026-07-01 14:41:00,095 [INFO] pipeline.verifier: Executing DuckDuckGo search for: 'Crito Plato Socrates'
+2026-07-01 14:41:00,336 [INFO] primp: response: https://www.bing.com/search?q=Crito+Plato+Socrates 200
+2026-07-01 14:41:00,431 [INFO] pipeline.verifier: [Claim 3] Gathered 8 pieces of evidence from web search.
+2026-07-01 14:41:00,432 [INFO] google_genai.models: AFC is enabled with max remote calls: 10.
+2026-07-01 14:41:00,614 [INFO] httpx: HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-07-01 14:41:00,631 [ERROR] pipeline.verifier: [Claim 3] LLM Verification step failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-2.5-flash\nPlease retry in 3.854401699s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-2.5-flash', 'location': 'global'}, 'quotaValue': '5'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '3s'}]}}
+2026-07-01 14:41:00,633 [INFO] pipeline.verifier: Processing verification 4/4...
+2026-07-01 14:41:00,635 [INFO] pipeline.verifier: [Claim 4] Starting verification: 'Socrates' dialogues were immortalized in works like Symposium.'
+2026-07-01 14:41:00,637 [INFO] google_genai.models: AFC is enabled with max remote calls: 10.
+2026-07-01 14:41:02,861 [INFO] httpx: HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-07-01 14:41:02,867 [INFO] pipeline.verifier: Generated search queries for 'Socrates' dialogues were immortalized in...': ['Socrates dialogues Symposium', 'Plato Symposium Socrates']
+2026-07-01 14:41:02,868 [INFO] pipeline.verifier: Executing DuckDuckGo search for: 'Socrates dialogues Symposium'
+2026-07-01 14:41:03,122 [INFO] primp: response: https://www.bing.com/search?q=Socrates+dialogues+Symposium 200
+2026-07-01 14:41:04,503 [INFO] primp: response: https://www.bing.com/search?q=Socrates+dialogues+Symposium 200
+2026-07-01 14:41:05,268 [INFO] primp: response: https://www.bing.com/search?q=Socrates+dialogues+Symposium 200
+2026-07-01 14:41:07,038 [INFO] primp: response: https://www.bing.com/search?q=Socrates+dialogues+Symposium 200
+2026-07-01 14:41:07,944 [INFO] primp: response: https://www.bing.com/search?q=Socrates+dialogues+Symposium 200
+2026-07-01 14:41:08,042 [INFO] pipeline.verifier: Executing DuckDuckGo search for: 'Plato Symposium Socrates'
+2026-07-01 14:41:08,288 [INFO] primp: response: https://www.bing.com/search?q=Plato+Symposium+Socrates 200
+2026-07-01 14:41:09,329 [INFO] primp: response: https://www.bing.com/search?q=Plato+Symposium+Socrates 200
+2026-07-01 14:41:09,662 [INFO] primp: response: https://www.bing.com/search?q=Plato+Symposium+Socrates 200
+2026-07-01 14:41:10,634 [INFO] primp: response: https://www.bing.com/search?q=Plato+Symposium+Socrates 200
+2026-07-01 14:41:10,937 [INFO] primp: response: https://www.bing.com/search?q=Plato+Symposium+Socrates 200
+2026-07-01 14:41:11,009 [INFO] pipeline.verifier: [Claim 4] Gathered 8 pieces of evidence from web search.
+2026-07-01 14:41:11,009 [INFO] google_genai.models: AFC is enabled with max remote calls: 10.
+2026-07-01 14:41:11,218 [INFO] httpx: HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-07-01 14:41:11,220 [ERROR] pipeline.verifier: [Claim 4] LLM Verification step failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-2.5-flash\nPlease retry in 53.252447928s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.5-flash'}, 'quotaValue': '5'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '53s'}]}}
+2026-07-01 14:41:11,220 [INFO] pipeline.verifier: All 4 claims verified.
+2026-07-01 14:41:11,231 [INFO] database.mongo_client: Connecting to MongoDB at mongodb://localhost:27017/
+2026-07-01 14:41:11,288 [INFO] database.mongo_client: MongoDB connected and indexes created successfully.
+2026-07-01 14:41:11,292 [INFO] database.mongo_client: Successfully inserted video transcript. ObjectId: 6a44d9af0f5cd704946808f9
+2026-07-01 14:41:11,294 [INFO] database.mongo_client: MongoDB client connection closed.
+2026-07-01 14:43:40,654 [INFO] FactLensOrchestrator: ============================================================
+2026-07-01 14:43:40,655 [INFO] FactLensOrchestrator: Starting FactLens pipeline for: video2.mp4
+2026-07-01 14:43:40,655 [INFO] FactLensOrchestrator: ============================================================
+2026-07-01 14:43:40,746 [INFO] utils.video: Successfully extracted video metadata: video2.mp4 (720x1280, 10.65s)
+2026-07-01 14:43:40,753 [INFO] pipeline.audio_extractor: Extracting audio using command: ffmpeg -i D:\factlens_1\video2.mp4 -vn -acodec pcm_s16le -ar 16000 -ac 1 D:\factlens_1\temp\audio.wav -y
+2026-07-01 14:43:40,887 [INFO] pipeline.audio_extractor: Audio extracted successfully: temp/audio.wav
+2026-07-01 14:43:40,888 [INFO] pipeline.transcriber: Loading Whisper model 'base' on device 'cpu'...
+2026-07-01 14:43:41,675 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base/revision/main "HTTP/1.1 200 OK"
+2026-07-01 14:43:42,904 [INFO] pipeline.transcriber: Whisper model loaded successfully.
+2026-07-01 14:43:42,905 [INFO] pipeline.transcriber: Starting audio transcription for audio.wav
+2026-07-01 14:43:43,105 [INFO] faster_whisper: Processing audio with duration 00:10.635
+2026-07-01 14:43:45,219 [INFO] faster_whisper: Detected language 'en' with probability 1.00
+2026-07-01 14:43:45,228 [INFO] pipeline.transcriber: Detected language: 'en' with probability 1.00
+2026-07-01 14:43:48,795 [INFO] pipeline.transcriber: Transcription completed. Extracted 2 segments.
+2026-07-01 14:43:48,921 [INFO] pipeline.frame_extractor: Extracting frames from video: video2.mp4 (FPS: 60.00, Duration: 10.65s)
+2026-07-01 14:43:48,921 [INFO] pipeline.frame_extractor: Target interval: 1.0s
+2026-07-01 14:43:50,220 [INFO] pipeline.frame_extractor: Frame extraction completed. Extracted 11 frames.
+2026-07-01 14:43:50,226 [INFO] pipeline.ocr_engine: Initializing EasyOCR reader for languages: ['en', 'hi']
+2026-07-01 14:43:50,227 [WARNING] easyocr.easyocr: Neither CUDA nor MPS are available - defaulting to CPU. Note: This module is much faster with a GPU.
+2026-07-01 14:43:55,542 [INFO] pipeline.ocr_engine: EasyOCR reader initialized successfully.
+2026-07-01 14:43:55,543 [INFO] pipeline.ocr_engine: Starting OCR processing for 11 frames...
+2026-07-01 14:45:35,287 [INFO] pipeline.ocr_engine: Raw OCR completed. Extracted 15 text boxes above threshold 0.4.
+2026-07-01 14:45:35,287 [INFO] pipeline.ocr_engine: Applying OCR deduplication across nearby frames...
+2026-07-01 14:45:35,289 [INFO] pipeline.ocr_engine: Deduplication complete. Retained 13 unique OCR events.
+2026-07-01 14:45:35,292 [INFO] pipeline.frame_extractor: Temporary frames directory cleaned up successfully.
+2026-07-01 14:45:35,293 [INFO] FactLensOrchestrator: Temporary audio WAV file deleted.
+2026-07-01 14:45:35,294 [INFO] pipeline.merger: Merging speech transcription and OCR visual text...
+2026-07-01 14:45:35,295 [INFO] pipeline.merger: Merging complete. Generated 2 chronological timeline entries.
+2026-07-01 14:45:35,296 [INFO] pipeline.claim_extractor: Initializing Gemini client for claim extraction...
+2026-07-01 14:45:35,354 [INFO] pipeline.claim_extractor: Sending transcript to Gemini for claim extraction...
+2026-07-01 14:45:35,356 [INFO] google_genai.models: AFC is enabled with max remote calls: 10.
+2026-07-01 14:45:40,462 [INFO] httpx: HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-07-01 14:45:40,475 [INFO] pipeline.claim_extractor: Extracted: [Claim 1] (Historical) - Aristotle studied logic, ethics, politics, and art.
+2026-07-01 14:45:40,477 [INFO] pipeline.claim_extractor: Extracted: [Claim 2] (Historical) - Aristotle asked how to live well.
+2026-07-01 14:45:40,477 [INFO] pipeline.claim_extractor: Extracted: [Claim 3] (Historical) - Aristotle called a concept 'the golden mean virtue imbalance'.
+2026-07-01 14:45:40,478 [INFO] pipeline.claim_extractor: Successfully extracted 3 verifiable claims.
+2026-07-01 14:45:40,491 [INFO] pipeline.verifier: Initializing Gemini client for claims verification...
+2026-07-01 14:45:40,540 [INFO] pipeline.verifier: Processing verification 1/3...
+2026-07-01 14:45:40,541 [INFO] pipeline.verifier: [Claim 1] Starting verification: 'Aristotle studied logic, ethics, politics, and art.'
+2026-07-01 14:45:40,541 [INFO] google_genai.models: AFC is enabled with max remote calls: 10.
+2026-07-01 14:45:43,583 [INFO] httpx: HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-07-01 14:45:43,588 [INFO] pipeline.verifier: Generated search queries for 'Aristotle studied logic, ethics, politic...': ['Aristotle studies logic ethics politics art', 'Aristotle fields of study']
+2026-07-01 14:45:43,589 [INFO] pipeline.verifier: Executing DuckDuckGo search for: 'Aristotle studies logic ethics politics art'
+2026-07-01 14:45:43,959 [INFO] primp: response: https://www.bing.com/search?q=Aristotle+studies+logic+ethics+politics+art 200
+2026-07-01 14:45:45,647 [INFO] primp: response: https://www.bing.com/search?q=Aristotle+studies+logic+ethics+politics+art 200
+2026-07-01 14:45:46,517 [INFO] primp: response: https://www.bing.com/search?q=Aristotle+studies+logic+ethics+politics+art 200
+2026-07-01 14:45:47,534 [INFO] primp: response: https://www.bing.com/search?q=Aristotle+studies+logic+ethics+politics+art 200
+2026-07-01 14:45:47,893 [INFO] primp: response: https://www.bing.com/search?q=Aristotle+studies+logic+ethics+politics+art 200
+2026-07-01 14:45:48,884 [INFO] primp: response: https://www.bing.com/search?q=Aristotle+studies+logic+ethics+politics+art 200
+2026-07-01 14:45:48,974 [INFO] pipeline.verifier: Executing DuckDuckGo search for: 'Aristotle fields of study'
+2026-07-01 14:45:49,198 [INFO] primp: response: https://www.bing.com/search?q=Aristotle+fields+of+study 200
+2026-07-01 14:45:50,259 [INFO] primp: response: https://www.bing.com/search?q=Aristotle+fields+of+study 200
+2026-07-01 14:45:50,564 [INFO] primp: response: https://www.bing.com/search?q=Aristotle+fields+of+study 200
+2026-07-01 14:45:50,674 [INFO] pipeline.verifier: [Claim 1] Gathered 4 pieces of evidence from web search.
+2026-07-01 14:45:50,676 [INFO] google_genai.models: AFC is enabled with max remote calls: 10.
+2026-07-01 14:46:05,571 [INFO] httpx: HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-07-01 14:46:05,578 [INFO] pipeline.verifier: [Claim 1] Verification complete. Verdict: Partially True, Confidence: 0.9
+2026-07-01 14:46:05,579 [INFO] pipeline.verifier: Processing verification 2/3...
+2026-07-01 14:46:05,581 [INFO] pipeline.verifier: [Claim 2] Starting verification: 'Aristotle asked how to live well.'
+2026-07-01 14:46:05,583 [INFO] google_genai.models: AFC is enabled with max remote calls: 10.
+2026-07-01 14:46:07,347 [INFO] httpx: HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-07-01 14:46:07,353 [INFO] pipeline.verifier: Generated search queries for 'Aristotle asked how to live well....': ['Aristotle ethics living well', 'Aristotle eudaimonia philosophy']
+2026-07-01 14:46:07,354 [INFO] pipeline.verifier: Executing DuckDuckGo search for: 'Aristotle ethics living well'
+2026-07-01 14:46:07,632 [INFO] primp: response: https://www.bing.com/search?q=Aristotle+ethics+living+well 200
+2026-07-01 14:46:08,949 [INFO] primp: response: https://www.bing.com/search?q=Aristotle+ethics+living+well 200
+2026-07-01 14:46:09,643 [INFO] primp: response: https://www.bing.com/search?q=Aristotle+ethics+living+well 200
+2026-07-01 14:46:09,739 [INFO] pipeline.verifier: Executing DuckDuckGo search for: 'Aristotle eudaimonia philosophy'
+2026-07-01 14:46:09,981 [INFO] primp: response: https://www.bing.com/search?q=Aristotle+eudaimonia+philosophy 200
+2026-07-01 14:46:10,980 [INFO] primp: response: https://www.bing.com/search?q=Aristotle+eudaimonia+philosophy 200
+2026-07-01 14:46:11,512 [INFO] primp: response: https://www.bing.com/search?q=Aristotle+eudaimonia+philosophy 200
+2026-07-01 14:46:12,829 [INFO] primp: response: https://www.bing.com/search?q=Aristotle+eudaimonia+philosophy 200
+2026-07-01 14:46:13,476 [INFO] primp: response: https://www.bing.com/search?q=Aristotle+eudaimonia+philosophy 200
+2026-07-01 14:46:13,897 [INFO] pipeline.verifier: [Claim 2] Gathered 7 pieces of evidence from web search.
+2026-07-01 14:46:13,899 [INFO] google_genai.models: AFC is enabled with max remote calls: 10.
+2026-07-01 14:46:18,417 [INFO] httpx: HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-07-01 14:46:18,422 [INFO] pipeline.verifier: [Claim 2] Verification complete. Verdict: True, Confidence: 1.0
+2026-07-01 14:46:18,423 [INFO] pipeline.verifier: Processing verification 3/3...
+2026-07-01 14:46:18,424 [INFO] pipeline.verifier: [Claim 3] Starting verification: 'Aristotle called a concept 'the golden mean virtue imbalance'.'
+2026-07-01 14:46:18,426 [INFO] google_genai.models: AFC is enabled with max remote calls: 10.
+2026-07-01 14:46:21,337 [INFO] httpx: HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-07-01 14:46:21,339 [INFO] pipeline.verifier: Generated search queries for 'Aristotle called a concept 'the golden m...': ['Aristotle golden mean virtue imbalance', 'Aristotle golden mean excess deficiency']
+2026-07-01 14:46:21,339 [INFO] pipeline.verifier: Executing DuckDuckGo search for: 'Aristotle golden mean virtue imbalance'
+2026-07-01 14:46:21,564 [INFO] primp: response: https://www.bing.com/search?q=Aristotle+golden+mean+virtue+imbalance 200
+2026-07-01 14:46:21,666 [INFO] pipeline.verifier: Executing DuckDuckGo search for: 'Aristotle golden mean excess deficiency'
+2026-07-01 14:46:21,887 [INFO] primp: response: https://www.bing.com/search?q=Aristotle+golden+mean+excess+deficiency 200
+2026-07-01 14:46:22,876 [INFO] primp: response: https://www.bing.com/search?q=Aristotle+golden+mean+excess+deficiency 200
+2026-07-01 14:46:23,947 [INFO] primp: response: https://www.bing.com/search?q=Aristotle+golden+mean+excess+deficiency 200
+2026-07-01 14:46:24,974 [INFO] primp: response: https://www.bing.com/search?q=Aristotle+golden+mean+excess+deficiency 200
+2026-07-01 14:46:25,305 [INFO] primp: response: https://www.bing.com/search?q=Aristotle+golden+mean+excess+deficiency 200
+2026-07-01 14:46:26,294 [INFO] primp: response: https://www.bing.com/search?q=Aristotle+golden+mean+excess+deficiency 200
+2026-07-01 14:46:26,389 [INFO] pipeline.verifier: [Claim 3] Gathered 4 pieces of evidence from web search.
+2026-07-01 14:46:26,391 [INFO] google_genai.models: AFC is enabled with max remote calls: 10.
+2026-07-01 14:46:29,895 [INFO] httpx: HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-07-01 14:46:29,901 [INFO] pipeline.verifier: [Claim 3] Verification complete. Verdict: False, Confidence: 0.9
+2026-07-01 14:46:29,902 [INFO] pipeline.verifier: All 3 claims verified.
+2026-07-01 14:46:29,932 [INFO] database.mongo_client: Connecting to MongoDB at mongodb://localhost:27017/
+2026-07-01 14:46:29,956 [INFO] database.mongo_client: MongoDB connected and indexes created successfully.
+2026-07-01 14:46:29,959 [INFO] database.mongo_client: Successfully inserted video transcript. ObjectId: 6a44daed99942a3e180d539b
+2026-07-01 14:46:29,961 [INFO] database.mongo_client: MongoDB client connection closed.

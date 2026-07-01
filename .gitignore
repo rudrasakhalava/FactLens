@@ -1,34 +1,74 @@
-# Python
+# ==========================================
+# Python System & Cache
+# ==========================================
 __pycache__/
 *.py[cod]
-
-# Virtual Environment
-.venv/
-venv/
-
-# Environment Variables
-.env
-
-# VS Code
-.vscode/
-
-# FFmpeg
-ffmpeg*/
-
-# Temporary files
-temp/
-logs/
-
-# Whisper Models
-models/
-
-# Python cache
+*$py.class
 .pytest_cache/
 .mypy_cache/
+.ruff_cache/
 
-# OS files
+# ==========================================
+# Virtual Environments (Prevent pushing libraries)
+# ==========================================
+.venv/
+venv/
+ENV/
+env/
+
+# ==========================================
+# Configuration & Credentials (CRITICAL SECURITY)
+# ==========================================
+.env
+.env.*
+!.env.example
+secrets.json
+
+# ==========================================
+# Logs & Process Output
+# ==========================================
+*.log
+factlens_processing.log
+logs/
+
+# ==========================================
+# Temporary Files & Directories
+# ==========================================
+temp/
+tmp/
+C:\Users\rudra\.gemini\antigravity\scratch\factlens\temp/
+
+# ==========================================
+# Large Media & Binary Files (Prevent pushing videos)
+# ==========================================
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+*.wav
+video.mp4
+video2.mp4
+
+# ==========================================
+# Binaries, Libraries & Engines
+# ==========================================
+ffmpeg/
+ffmpeg.exe
+ffprobe.exe
+models/
+
+# ==========================================
+# IDE & System Files
+# ==========================================
+.vscode/
+.idea/
 .DS_Store
 Thumbs.db
 
+# ==========================================
+# Temporary Scratch & Local Test Files
+# ==========================================
 test.py
 test_mongo.py
+scratch/

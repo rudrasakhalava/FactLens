@@ -22,16 +22,21 @@ class Config:
     # Whisper Configuration
     WHISPER_MODEL: str = os.getenv("WHISPER_MODEL", "base")
     
+    # Gemini Configuration
+    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
+    GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+
     # Folders
     TEMP_FOLDER: Path = Path(os.getenv("TEMP_FOLDER", "temp")).resolve()
     
     # File Formats
     SUPPORTED_EXTENSIONS: set[str] = {".mp4", ".mov", ".avi", ".mkv", ".webm"}
     
-    # OCR Languages (English, Hindi, Gujarati)
-    OCR_LANGUAGES: list[str] = ["en", "hi", "gu"]
+    # OCR Languages (English, Hindi)
+    OCR_LANGUAGES: list[str] = ["en", "hi"]
 
     @classmethod
     def setup_temp_dir(cls) -> None:
         """Create the temporary folder if it does not exist."""
         cls.TEMP_FOLDER.mkdir(parents=True, exist_ok=True)
+
