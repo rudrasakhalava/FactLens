@@ -77,7 +77,7 @@ class TestFactLensPipelineLogic(unittest.TestCase):
         mock_verif_response = MagicMock()
         mock_verif_response.parsed = VerificationResponse(
             verdict="True",
-            confidence=0.98,
+            confidence=98.0,
             evidence_summary="According to the official Eiffel Tower website, the tower's height is 330 meters including the antenna.",
             explanation="The claim is correct. Sources verify that the Eiffel Tower is 330 meters tall."
         )
@@ -106,7 +106,7 @@ class TestFactLensPipelineLogic(unittest.TestCase):
         # Assertions
         self.assertEqual(res["claim_id"], "Claim 1")
         self.assertEqual(res["verdict"], "True")
-        self.assertEqual(res["confidence"], 0.98)
+        self.assertEqual(res["confidence"], 98.0)
         self.assertEqual(res["evidence_summary"], "According to the official Eiffel Tower website, the tower's height is 330 meters including the antenna.")
         self.assertIn("https://www.toureiffel.paris/en", res["sources"][0]["url"])
 
@@ -137,10 +137,13 @@ class TestFactLensPipelineLogic(unittest.TestCase):
             "claims": {
                 "Claim 1": {
                     "original_claim": "The Eiffel Tower is 330 meters tall.",
-                    "verification_response": "True",
+                    "search_query_used": ["The Eiffel Tower is 330 meters tall."],
+                    "retrieved_sources": [],
+                    "evidence_summary": "Summary",
+                    "verification_explanation": "Verified.",
                     "verdict": "True",
-                    "confidence": 0.98,
-                    "evidence_summary": "Summary"
+                    "confidence": 98.0,
+                    "processing_time": "1.2s"
                 }
             }
         }
@@ -150,6 +153,181 @@ class TestFactLensPipelineLogic(unittest.TestCase):
         self.assertEqual(inserted_id, str(dummy_id))
         mock_collection.insert_one.assert_called_once_with(document)
         db.close()
+
+    @patch("pipeline.content_classifier.genai.Client")
+    def test_content_classification(self, mock_client_class):
+        from pipeline.content_classifier import classify_video, VideoAnalysis, VideoSegment, SongInfo
+        
+        # Setup mocks
+        mock_client = MagicMock()
+        mock_client_class.return_value = mock_client
+        
+        mock_response = MagicMock()
+        mock_response.parsed = VideoAnalysis(
+            is_mixed_content=True,
+            segments=[
+                VideoSegment(
+                    segment_id=1,
+                    start_time=0.0,
+                    end_time=10.0,
+                    primary_category="News",
+                    confidence=0.95,
+                    reason="News report segment.",
+                    content_type="informational"
+                ),
+                VideoSegment(
+                    segment_id=2,
+                    start_time=10.0,
+                    end_time=20.0,
+                    primary_category="Song",
+                    confidence=0.90,
+                    reason="Music insert segment.",
+                    content_type="music",
+                    song_info=SongInfo(title="National Anthem", artist="Various"),
+                    lyrics_summary="Patriotic lyrics segment."
+                )
+            ]
+        )
+        mock_client.models.generate_content.return_value = mock_response
+        
+        # Run classification
+        metadata = {"filename": "mixed_video.mp4", "duration": 20.0, "resolution": "1920x1080"}
+        result = classify_video("Some news text followed by a patriotic song lyric.", metadata)
+        
+        # Assertions
+        self.assertTrue(result.is_mixed_content)
+        self.assertEqual(len(result.segments), 2)
+        self.assertEqual(result.segments[0].primary_category, "News")
+        self.assertEqual(result.segments[0].content_type, "informational")
+        self.assertEqual(result.segments[1].primary_category, "Song")
+        self.assertEqual(result.segments[1].content_type, "music")
+        self.assertEqual(result.segments[1].song_info.title, "National Anthem")
+
+    @patch("pipeline.claim_extractor.genai.Client")
+    def test_lyrics_claim_extraction(self, mock_client_class):
+        from pipeline.claim_extractor import extract_claims_from_lyrics
+        
+        # Setup mocks
+        mock_client = MagicMock()
+        mock_client_class.return_value = mock_client
+        
+        mock_response = MagicMock()
+        mock_response.parsed = ClaimList(
+            claims=[
+                Claim(
+                    claim_id="Claim 1",
+                    claim_text="India became independent in 1947.",
+                    timestamp=0.0,
+                    category="Historical"
+                )
+            ]
+        )
+        mock_client.models.generate_content.return_value = mock_response
+        
+        # Run extraction
+        claims = extract_claims_from_lyrics("India became independent in 1947, in the summer night of love.", start_time=12.0)
+        
+        # Assertions
+        self.assertEqual(len(claims), 1)
+        self.assertEqual(claims[0]["claim_text"], "India became independent in 1947.")
+        # Note: the timestamp matches the start_time parameter passed to extract_claims_from_lyrics
+        self.assertEqual(claims[0]["timestamp"], 12.0)
+        self.assertEqual(claims[0]["category"], "Historical")
+
+    @patch("pipeline.claim_extractor.genai.Client")
+    def test_second_pass_claim_extraction(self, mock_client_class):
+        from pipeline.claim_extractor import extract_claims_second_pass
+        
+        mock_client = MagicMock()
+        mock_client_class.return_value = mock_client
+        
+        mock_response = MagicMock()
+        mock_response.parsed = ClaimList(
+            claims=[
+                Claim(
+                    claim_id="Claim 1",
+                    claim_text="Aristotle studied logic.",
+                    timestamp=0.0,
+                    category="Historical"
+                )
+            ]
+        )
+        mock_client.models.generate_content.return_value = mock_response
+        
+        claims = extract_claims_second_pass("He studied logic, ethics, art.")
+        self.assertEqual(len(claims), 1)
+        self.assertEqual(claims[0]["claim_text"], "Aristotle studied logic.")
+        
+    @patch("pipeline.content_classifier.genai.Client")
+    def test_intelligent_fallback_response(self, mock_client_class):
+        from pipeline.content_classifier import generate_intelligent_fallback_response, IntelligentFallbackResponse
+        
+        mock_client = MagicMock()
+        mock_client_class.return_value = mock_client
+        
+        mock_response = MagicMock()
+        mock_response.parsed = IntelligentFallbackResponse(
+            category="Music",
+            confidence=0.98,
+            reason="Heuristic match: Music keywords detected.",
+            summary="Artistic song lyrics.",
+            explanation="This video has been classified as a music video. The lyrics primarily contain artistic or emotional expressions rather than objectively verifiable factual claims, so no fact verification was required.",
+            song_title="Mock Socrates Song",
+            artist="Philosopher Band"
+        )
+        mock_client.models.generate_content.return_value = mock_response
+        
+        fallback = generate_intelligent_fallback_response(
+            transcript_text="philosopher band mock socrates song",
+            category="Music",
+            confidence=0.98,
+            reason="Heuristic match: Music keywords detected.",
+            metadata={}
+        )
+        
+        self.assertEqual(fallback.category, "Music")
+        self.assertEqual(fallback.song_title, "Mock Socrates Song")
+        self.assertEqual(fallback.artist, "Philosopher Band")
+
+    @patch("pipeline.claim_extractor.genai.Client")
+    @patch("PIL.Image.open")
+    def test_ocr_visual_claim_extraction(self, mock_image_open, mock_client_class):
+        from pipeline.claim_extractor import extract_ocr_visual_claims
+        
+        mock_image = MagicMock()
+        mock_image_open.return_value = mock_image
+        
+        mock_client = MagicMock()
+        mock_client_class.return_value = mock_client
+        
+        mock_response = MagicMock()
+        mock_response.parsed = ClaimList(
+            claims=[
+                Claim(
+                    claim_id="Claim 1",
+                    claim_text="The quote 'They may kill me, but they cannot kill my ideas.' was said by Bhagat Singh.",
+                    timestamp=5.0,
+                    category="Historical"
+                ),
+                Claim(
+                    claim_id="Claim 2",
+                    claim_text="The quote shown in the video is correctly attributed to Bhagat Singh.",
+                    timestamp=5.0,
+                    category="Historical"
+                )
+            ]
+        )
+        mock_client.models.generate_content.return_value = mock_response
+        
+        claims = extract_ocr_visual_claims(
+            frame_path="mock_frame.jpg",
+            ocr_text="They may kill me, but they cannot kill my ideas. - Bhagat Singh",
+            timestamp=5.0
+        )
+        
+        self.assertEqual(len(claims), 2)
+        self.assertEqual(claims[0]["claim_text"], "The quote 'They may kill me, but they cannot kill my ideas.' was said by Bhagat Singh.")
+        self.assertEqual(claims[1]["claim_text"], "The quote shown in the video is correctly attributed to Bhagat Singh.")
 
 if __name__ == "__main__":
     unittest.main()
