@@ -34,19 +34,15 @@ class VerifierError(Exception):
 # Simple in-memory cache for search queries to avoid redundant network requests
 _search_cache: Dict[str, List[Dict[str, Any]]] = {}
 
-def get_search_queries(client: genai.Client, claim_text: str) -> List[str]:
-    """Use Gemini to generate optimal search queries for a claim.
-    
-    Args:
-        client: The initialized Gemini Client.
-        claim_text: Factual claim.
-        
-    Returns:
-        List of generated search query strings.
-    """
+def get_search_queries(client: genai.Client, claim_text: str, reconstructed_context: Optional[str] = None) -> List[str]:
+    """Use Gemini to generate optimal search queries for a claim."""
     prompt = (
         f"Generate 1 to 2 search engine queries optimized to gather evidence for verifying this factual claim.\n\n"
         f"Claim: \"{claim_text}\"\n\n"
+    )
+    if reconstructed_context:
+        prompt += f"Video Context/Story:\n\"{reconstructed_context}\"\n\n"
+    prompt += (
         f"Guidelines:\n"
         f"1. Use keywords, names, dates, and terms.\n"
         f"2. Keep queries short and search-engine friendly (avoid natural language questions like 'Is ... true?').\n"
@@ -303,26 +299,21 @@ def _local_synthesize_verification(claim_text: str, all_evidence: List[Dict[str,
         "sources": all_evidence
     }
 
-def verify_single_claim(client: genai.Client, claim: Dict[str, Any]) -> Dict[str, Any]:
-    """Verify a single claim by generating queries, searching, and running RAG verification.
-    
-    Args:
-        client: Gemini Client.
-        claim: Dict with 'claim_id', 'claim_text', etc.
-        
-    Returns:
-        Dict representing verification results, including verdict, confidence, summary, and source citations.
-    """
+def verify_single_claim(client: genai.Client, claim: Dict[str, Any], reconstructed_context: Optional[str] = None) -> Dict[str, Any]:
+    """Verify a single claim by generating queries, searching, and running RAG verification."""
     claim_id = claim["claim_id"]
     claim_text = claim["claim_text"]
     
+    if not reconstructed_context:
+        reconstructed_context = claim.get("reconstructed_context")
+        
     logger.info(f"[{claim_id}] Starting verification: '{claim_text}'")
     start_time = time.time()
     
     # 1. Generate search queries
     queries = []
     try:
-        queries = get_search_queries(client, claim_text)
+        queries = get_search_queries(client, claim_text, reconstructed_context)
     except Exception as e:
         logger.warning(f"[{claim_id}] Failed to generate search queries: {e}")
         queries = [claim_text]
@@ -384,7 +375,10 @@ def verify_single_claim(client: genai.Client, claim: Dict[str, Any]) -> Dict[str
         "4. Assign a confidence score based on the reliability of sources. Government/academic sources deserve high confidence, personal blogs/social media do not. Value MUST be between 0 (no confidence) and 100 (absolute certainty)."
     )
 
-    prompt = (
+    prompt = ""
+    if reconstructed_context:
+        prompt += f"VIDEO RECONSTRUCTED NARRATIVE/CONTEXT:\n\"{reconstructed_context}\"\n\n"
+    prompt += (
         f"CLAIM TO VERIFY:\n\"{claim_text}\"\n\n"
         f"RETRIEVED EVIDENCE:\n{formatted_evidence}\n\n"
         f"Instructions:\n"
@@ -459,18 +453,8 @@ def verify_single_claim(client: genai.Client, claim: Dict[str, Any]) -> Dict[str
             "processing_time": processing_time
         }
 
-def verify_claims(claims: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Iterate and verify all claims independently.
-    
-    Args:
-        claims: List of claim dicts containing 'claim_id' and 'claim_text'.
-        
-    Returns:
-        List of claim verification result dicts.
-        
-    Raises:
-        VerifierError: If the Gemini client cannot be initialized.
-    """
+def verify_claims(claims: List[Dict[str, Any]], reconstructed_context: Optional[str] = None) -> List[Dict[str, Any]]:
+    """Iterate and verify all claims independently."""
     if not Config.GEMINI_API_KEY:
         logger.warning("Gemini API key is not configured. Running Heuristic Verification using DuckDuckGo search + local rule engine.")
         verifications = []
@@ -523,7 +507,7 @@ def verify_claims(claims: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     for idx, claim in enumerate(claims, start=1):
         # Log progress
         logger.info(f"Processing verification {idx}/{len(claims)}...")
-        res = verify_single_claim(client, claim)
+        res = verify_single_claim(client, claim, reconstructed_context)
         verifications.append(res)
         
     logger.info(f"All {len(claims)} claims verified.")

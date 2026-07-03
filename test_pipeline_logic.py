@@ -329,5 +329,37 @@ class TestFactLensPipelineLogic(unittest.TestCase):
         self.assertEqual(claims[0]["claim_text"], "The quote 'They may kill me, but they cannot kill my ideas.' was said by Bhagat Singh.")
         self.assertEqual(claims[1]["claim_text"], "The quote shown in the video is correctly attributed to Bhagat Singh.")
 
+    @patch("pipeline.context_reconstructor.genai.Client")
+    def test_global_context_reconstruction(self, mock_client_class):
+        from pipeline.context_reconstructor import reconstruct_global_context, ReconstructedContext, ResolvedEntity
+        
+        mock_client = MagicMock()
+        mock_client_class.return_value = mock_client
+        
+        mock_response = MagicMock()
+        mock_response.parsed = ReconstructedContext(
+            reconstructed_story="Socrates teaches students in Athens.",
+            resolved_entities=[
+                ResolvedEntity(name="Socrates", entity_type="Person", description="Greek philosopher", resolved_references=["he"])
+            ],
+            timeline_events=["Socrates teaches students"],
+            overall_narrative="Philosophical overview"
+        )
+        mock_client.models.generate_content.return_value = mock_response
+        
+        ctx = reconstruct_global_context("Socrates teaches students.", {"filename": "socrates.mp4"})
+        self.assertEqual(ctx["reconstructed_story"], "Socrates teaches students in Athens.")
+        self.assertEqual(ctx["resolved_entities"][0]["name"], "Socrates")
+        
+    def test_heuristic_context_reconstruction(self):
+        from pipeline.context_reconstructor import _heuristic_reconstruct_context
+        ctx = _heuristic_reconstruct_context("Socrates was a philosopher.")
+        self.assertEqual(ctx["resolved_entities"][0]["name"], "Socrates")
+        
+    def test_heuristic_pronoun_resolution(self):
+        from pipeline.claim_extractor import _resolve_heuristic_pronouns
+        resolved = _resolve_heuristic_pronouns("He taught Plato.", "Socrates was a philosopher.")
+        self.assertEqual(resolved, "Socrates taught Plato.")
+
 if __name__ == "__main__":
     unittest.main()

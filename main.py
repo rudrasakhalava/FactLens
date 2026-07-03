@@ -30,6 +30,7 @@ from pipeline.merger import merge_speech_and_ocr, compile_complete_text
 from pipeline.claim_extractor import extract_claims, extract_claims_from_lyrics, extract_claims_second_pass, extract_ocr_visual_claims, ClaimExtractorError
 from pipeline.verifier import verify_claims, VerifierError
 from pipeline.content_classifier import classify_video, generate_intelligent_fallback_response, VideoAnalysis, ContentClassifierError
+from pipeline.context_reconstructor import reconstruct_global_context, reconstruct_multimodal_context
 
 # Setup logging configuration
 logging.basicConfig(
@@ -168,6 +169,37 @@ def process_video_pipeline(video_path_str: str, interval: float, threshold: floa
     # 7. Compile Final Unified Text
     complete_text = compile_complete_text(merged_transcript)
     
+    # Context Reconstruction Layer (New Feature)
+    logger.info("Executing Context Reconstruction Layer...")
+    global_context = {}
+    try:
+        global_context = reconstruct_global_context(complete_text, metadata)
+    except Exception as e:
+        logger.error(f"Global context reconstruction failed: {e}")
+        global_context = {
+            "reconstructed_story": "Context reconstruction failed.",
+            "resolved_entities": [],
+            "timeline_events": [],
+            "overall_narrative": "Failed to parse narrative."
+        }
+
+    # Multimodal Context Fusion
+    logger.info("Executing Multimodal Context Fusion...")
+    multimodal_context = {}
+    try:
+        multimodal_context = reconstruct_multimodal_context(
+            reconstructed_transcript_context=global_context,
+            frame_items=frame_items,
+            ocr_results=ocr_results
+        )
+    except Exception as e:
+        logger.error(f"Multimodal context fusion failed: {e}")
+        multimodal_context = {
+            "image_understanding_summary": "Multimodal fusion failed.",
+            "multimodal_narrative": "Failed to fuse multimodal elements.",
+            "resolved_visual_entities": []
+        }
+    
     # 8. Content Classification (New Feature)
     logger.info("Executing Content Classification stage...")
     overall_classification = {}
@@ -176,6 +208,8 @@ def process_video_pipeline(video_path_str: str, interval: float, threshold: floa
     global_claims = {}
     claim_counter = 1
     fact_verification_executed = False
+    context_aware_claims_list = []
+    all_context_aware_queries = []
     
     try:
         analysis: VideoAnalysis = classify_video(complete_text, metadata)
@@ -208,7 +242,7 @@ def process_video_pipeline(video_path_str: str, interval: float, threshold: floa
             if seg.content_type == "informational":
                 # Informational: Run Claim Extraction & Verification
                 try:
-                    seg_claims = extract_claims(seg_text)
+                    seg_claims = extract_claims(seg_text, global_context.get("reconstructed_story"))
                 except Exception as e:
                     logger.error(f"Claim extraction failed for segment {seg.segment_id}: {e}")
                 
@@ -217,7 +251,7 @@ def process_video_pipeline(video_path_str: str, interval: float, threshold: floa
                 if not seg_claims and is_edu_or_news:
                     logger.info(f"Segment {seg.segment_id} classified as Educational/News but no claims extracted. Retrying claim extraction with strict second-pass...")
                     try:
-                        seg_claims = extract_claims_second_pass(seg_text)
+                        seg_claims = extract_claims_second_pass(seg_text, global_context.get("reconstructed_story"))
                     except Exception as e:
                         logger.error(f"Second-pass claim extraction failed for segment {seg.segment_id}: {e}")
                 
@@ -225,14 +259,14 @@ def process_video_pipeline(video_path_str: str, interval: float, threshold: floa
                     fact_verification_executed = True
                     verified = True
                     try:
-                        seg_verifications = verify_claims(seg_claims)
+                        seg_verifications = verify_claims(seg_claims, global_context.get("reconstructed_story"))
                     except Exception as e:
                         logger.error(f"Verification failed for segment {seg.segment_id}: {e}")
                         
             elif seg.content_type == "music":
                 # Music: Run selective Lyrics claim extraction
                 try:
-                    seg_claims = extract_claims_from_lyrics(seg_text, start_time=seg.start_time)
+                    seg_claims = extract_claims_from_lyrics(seg_text, start_time=seg.start_time, reconstructed_context=global_context.get("reconstructed_story"))
                 except Exception as e:
                     logger.error(f"Lyrics claim extraction failed for segment {seg.segment_id}: {e}")
                     
@@ -243,7 +277,7 @@ def process_video_pipeline(video_path_str: str, interval: float, threshold: floa
                         # Rename lyric claims to prevent naming collisions
                         for idx, c in enumerate(seg_claims, start=1):
                             c["claim_id"] = f"Claim {idx}"
-                        seg_verifications = verify_claims(seg_claims)
+                        seg_verifications = verify_claims(seg_claims, global_context.get("reconstructed_story"))
                     except Exception as e:
                         logger.error(f"Lyrics claim verification failed for segment {seg.segment_id}: {e}")
             
@@ -261,7 +295,8 @@ def process_video_pipeline(video_path_str: str, interval: float, threshold: floa
                             visual_claims = extract_ocr_visual_claims(
                                 frame_path=Path(matching_frame["path"]),
                                 ocr_text=ocr["text"],
-                                timestamp=ocr["timestamp"]
+                                timestamp=ocr["timestamp"],
+                                multimodal_context=multimodal_context
                             )
                             ocr_claims.extend(visual_claims)
                         except Exception as ex:
@@ -274,7 +309,10 @@ def process_video_pipeline(video_path_str: str, interval: float, threshold: floa
                 fact_verification_executed = True
                 verified = True
                 try:
-                    ocr_verifications = verify_claims(ocr_claims)
+                    # Rename ocr claims to avoid conflicts
+                    for idx, c in enumerate(ocr_claims, start=len(seg_claims) + 1):
+                        c["claim_id"] = f"Claim {idx}"
+                    ocr_verifications = verify_claims(ocr_claims, global_context.get("reconstructed_story"))
                     seg_verifications.extend(ocr_verifications)
                 except Exception as e:
                     logger.error(f"OCR visual claims verification failed: {e}")
@@ -301,6 +339,14 @@ def process_video_pipeline(video_path_str: str, interval: float, threshold: floa
                             "processing_time": verification.get("processing_time", "0.0s")
                         }
                         global_claims[claim_key] = formatted_seg_claims[claim_key]
+                        
+                        context_aware_claims_list.append({
+                            "claim_text": claim["claim_text"],
+                            "timestamp": claim["timestamp"],
+                            "category": claim.get("category", "General"),
+                            "verdict": verification.get("verdict", "")
+                        })
+                        all_context_aware_queries.extend(verification.get("search_queries", []))
                     else:
                         formatted_seg_claims[claim_key] = {
                             "original_claim": claim["claim_text"],
@@ -313,6 +359,14 @@ def process_video_pipeline(video_path_str: str, interval: float, threshold: floa
                             "processing_time": "0.0s"
                         }
                         global_claims[claim_key] = formatted_seg_claims[claim_key]
+                        
+                        context_aware_claims_list.append({
+                            "claim_text": claim["claim_text"],
+                            "timestamp": claim["timestamp"],
+                            "category": claim.get("category", "General"),
+                            "verdict": "Needs Human Verification"
+                        })
+                        all_context_aware_queries.append(claim["claim_text"])
             
             # If no claims were extracted, generate intelligent fallback response
             fallback_info = None
@@ -434,6 +488,20 @@ def process_video_pipeline(video_path_str: str, interval: float, threshold: floa
         "size_bytes": metadata["size_bytes"],
         "size_mb": metadata["size_mb"],
         "upload_timestamp": datetime.fromtimestamp(os.path.getmtime(metadata["path"])).isoformat() + "Z",
+        
+        # Context Reconstruction database storage
+        "context_reconstruction": {
+            "reconstructed_story": global_context.get("reconstructed_story"),
+            "resolved_entities": global_context.get("resolved_entities", []),
+            "timeline_events": global_context.get("timeline_events", []),
+            "overall_narrative": global_context.get("overall_narrative", ""),
+            "context_aware_search_queries": list(set(all_context_aware_queries)),
+            "linked_transcript_chunks": merged_transcript,
+            "linked_ocr_frames": ocr_results,
+            "image_understanding_summary": multimodal_context.get("image_understanding_summary", ""),
+            "multimodal_context": multimodal_context,
+            "generated_context_aware_claims": context_aware_claims_list
+        },
         
         # Complete merged transcript (Step 6)
         "complete_merged_transcript": complete_text,
